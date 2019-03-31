@@ -169,10 +169,9 @@ static void initGlfw() {
 
 int main(void) {
 	glfwContext::initGlfw();
-	shaderProgram::createProgram();
+	shaderProgram::createTerrainProgram();
 	terrain::init();
 	checkGl();
-
 
 	fps::fps_start();
 	while (!glfwWindowShouldClose(glfwContext::window)) {
@@ -191,7 +190,7 @@ int main(void) {
 		camera::applyViewTransform(model_view_projection);
 		camera::applyProjectionTransform(model_view_projection);
 
-		glUseProgram(shaderProgram::program);
+		glUseProgram(shaderProgram::terrain_program);
 		glBindVertexArray(terrain::terrainVAO);
 
 		glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE,
@@ -202,10 +201,8 @@ int main(void) {
 		glUniform3fv(globals::camera_position_location, 1, glm::value_ptr(camera::position));
 
 		glActiveTexture(GL_TEXTURE0);
-//		glBindTexture(GL_TEXTURE_2D, terrain::heightmap_location);
 		glPatchParameteri(GL_PATCH_VERTICES, 3);
 		glDrawElements(GL_PATCHES, terrain::indicesData.size(),GL_UNSIGNED_INT, 0);
-//		glDrawElements(GL_TRIANGLES, terrain::indicesData.size(),GL_UNSIGNED_INT, 0);
 		glUseProgram(0);
 		glBindVertexArray(0);
 

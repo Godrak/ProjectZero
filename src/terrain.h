@@ -23,11 +23,25 @@ struct vertex {
 std::vector<vertex> vertexData;
 std::vector<uint> indicesData;
 
+float readHeightmapValue(glm::vec2 position) {
+	float s = position.x / config::TERRAIN_SIZE_M.x;
+	float t = position.y / config::TERRAIN_SIZE_M.y;
+	auto heightmap_pos_x = s * gimp_image.width;
+	auto heightmap_pos_y = t * gimp_image.height;
+
+	int linear_coord = heightmap_pos_x * gimp_image.bytes_per_pixel
+			* heightmap_pos_y + heightmap_pos_x * gimp_image.bytes_per_pixel;
+
+	unsigned int value = gimp_image.pixel_data[linear_coord];
+	return (value/255.0f)*config::vertical_scaling;
+}
+
 void prepareData() {
 	for (int x = 0; x < config::TERRAIN_X; ++x) {
 		for (int z = 0; z < config::TERRAIN_Z; ++z) {
-			vertexData.push_back( { { x / config::VERTEX_PER_METER, 0, z / config::VERTEX_PER_METER },
-					{ 1.0, 0.0, 0.6 } });
+			vertexData.push_back(
+					{ { x / config::VERTEX_PER_METER, 0, z
+							/ config::VERTEX_PER_METER }, { 1.0, 0.0, 0.6 } });
 		}
 	}
 	int offset = 0; //note: if i indices buffer already contains stuff for other objects
@@ -51,7 +65,8 @@ void initHeightmapTex() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, gimp_image.width, gimp_image.height,
-			0, GL_RGB, GL_UNSIGNED_BYTE, gimp_image.pixel_data);
+			0,
+			GL_RGB, GL_UNSIGNED_BYTE, gimp_image.pixel_data);
 }
 
 void init() {
@@ -81,12 +96,12 @@ void init() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesData.size() * sizeof(uint),
 			indicesData.data(), GL_STATIC_DRAW);
 
-	// vertex attributes - position:
+// vertex attributes - position:
 	glEnableVertexAttribArray(vpos_location);
 	glVertexAttribPointer(vpos_location, 3, GL_FLOAT, GL_FALSE, sizeof(vertex),
 			(void *) 0);
 	checkGl();
-	// vertex attributes - color:
+// vertex attributes - color:
 	glEnableVertexAttribArray(vcol_location);
 	glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE, sizeof(vertex),
 			(void *) (sizeof(glm::vec3)));

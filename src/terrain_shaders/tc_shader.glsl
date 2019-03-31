@@ -11,9 +11,9 @@ in vec3[] color;
 out vec3[] position_es;
 out vec3[] color_es;
 
-int getTesLevel(float avg_distance){
+float getTesLevel(float avg_distance){
 	float t_size = (terrain_size.x+terrain_size.y)/2;
-	return int(round(max( (round(t_size/(avg_distance+5))) ,1.0f)));
+	return t_size/(avg_distance+20);
 }
 
 void main(){

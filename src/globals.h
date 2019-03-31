@@ -21,9 +21,6 @@ const float VERTEX_PER_METER = 0.1;
 const glm::vec2 TERRAIN_SIZE_M = { 513, 513 };
 const int TERRAIN_X = TERRAIN_SIZE_M.x * VERTEX_PER_METER;
 const int TERRAIN_Z = TERRAIN_SIZE_M.y * VERTEX_PER_METER;
-const int TERRAIN_HALF_X = TERRAIN_X / 2 + 1;
-const int TERRAIN_HALF_Z = TERRAIN_Z / 2 + 1;
-
 float vertical_scaling = 60;
 }
 
