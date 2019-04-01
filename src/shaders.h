@@ -10,6 +10,8 @@ namespace shaderProgram {
 GLuint terrain_v_shader, terrain_tc_shader, terrain_tes_shader,
 		terrain_f_shader, terrain_program;
 
+GLuint spheres_v_shader, spheres_f_shader, spheres_program;
+
 bool check_shader(std::string source, GLuint id, GLenum st) {
 	GLint logLength;
 	glGetShaderiv(id, GL_INFO_LOG_LENGTH, &logLength);
@@ -44,7 +46,8 @@ bool check_program(GLuint id, GLenum st) {
 	return (status == GL_TRUE);
 }
 
-void loadAndCompileShader(std::string source, GLuint& destination, GLenum type) {
+void loadAndCompileShader(std::string source, GLuint& destination,
+		GLenum type) {
 	std::ifstream shaderSource(source);
 	std::string shaderCode;
 	getline(shaderSource, shaderCode, (char) shaderSource.eof());
@@ -74,6 +77,20 @@ void createTerrainProgram() {
 	glAttachShader(terrain_program, terrain_f_shader);
 	glLinkProgram(terrain_program);
 	if (!check_program(terrain_program, GL_LINK_STATUS))
+		exit(-1);
+}
+
+void createSpheresProgram() {
+	loadAndCompileShader("spheres_shaders/v_shader.glsl", spheres_v_shader,
+	GL_VERTEX_SHADER);
+	loadAndCompileShader("spheres_shaders/f_shader.glsl", spheres_f_shader,
+	GL_FRAGMENT_SHADER);
+
+	spheres_program = glCreateProgram();
+	glAttachShader(spheres_program, spheres_v_shader);
+	glAttachShader(spheres_program, spheres_f_shader);
+	glLinkProgram(spheres_program);
+	if (!check_program(spheres_program, GL_LINK_STATUS))
 		exit(-1);
 }
 }

@@ -13,6 +13,7 @@
 #include "camera.h"
 #include "shaders.h"
 #include "terrain.h"
+#include "spheres.h"
 
 namespace fps {
 static double fpsOrigin = 0.0;
@@ -170,7 +171,9 @@ static void initGlfw() {
 int main(void) {
 	glfwContext::initGlfw();
 	shaderProgram::createTerrainProgram();
+	shaderProgram::createSpheresProgram();
 	terrain::init();
+	spheres::init();
 	checkGl();
 
 	fps::fps_start();
@@ -190,22 +193,41 @@ int main(void) {
 		camera::applyViewTransform(model_view_projection);
 		camera::applyProjectionTransform(model_view_projection);
 
+		//TERRAIN DRAW
 		glUseProgram(shaderProgram::terrain_program);
 		glBindVertexArray(terrain::terrainVAO);
 
 		glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE,
 				glm::value_ptr(model_view_projection));
 
-		glUniform2f(globals::terrain_size_location, config::TERRAIN_SIZE_M.x, config::TERRAIN_SIZE_M.y);
-		glUniform1f(globals::vertical_scaling_location, config::vertical_scaling);
-		glUniform3fv(globals::camera_position_location, 1, glm::value_ptr(camera::position));
+		glUniform2f(globals::terrain_size_location, config::TERRAIN_SIZE_M.x,
+				config::TERRAIN_SIZE_M.y);
+		glUniform1f(globals::vertical_scaling_location,
+				config::vertical_scaling);
+		glUniform3fv(globals::camera_position_location, 1,
+				glm::value_ptr(camera::position));
 
-		glActiveTexture(GL_TEXTURE0);
+
 		glPatchParameteri(GL_PATCH_VERTICES, 3);
-		glDrawElements(GL_PATCHES, terrain::indicesData.size(),GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_PATCHES, terrain::indicesData.size(), GL_UNSIGNED_INT,
+				0);
 		glUseProgram(0);
 		glBindVertexArray(0);
 
+		//SPHERES DRAW
+		glUseProgram(shaderProgram::spheres_program);
+		glBindVertexArray(spheres::spheresVAO);
+
+		glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE,
+				glm::value_ptr(model_view_projection));
+
+		glDrawElementsInstanced(GL_TRIANGLES, spheres::indicesData.size(),
+				GL_UNSIGNED_INT, 0, spheres::instanceCount);
+
+		glUseProgram(0);
+		glBindVertexArray(0);
+
+		//SWAP BUFFERS
 		glfwSwapBuffers(glfwContext::window);
 		glfwPollEvents();
 		if (config::geometryMode) {

@@ -17,11 +17,12 @@ GLint camera_position_location = 4;
 
 namespace config {
 bool geometryMode = false;
-const float VERTEX_PER_METER = 0.1;
-const glm::vec2 TERRAIN_SIZE_M = { 513, 513 };
+const float VERTEX_PER_METER = 0.05;
+const glm::vec2 TERRAIN_SIZE_M = { 1000, 1000 };
 const int TERRAIN_X = TERRAIN_SIZE_M.x * VERTEX_PER_METER;
 const int TERRAIN_Z = TERRAIN_SIZE_M.y * VERTEX_PER_METER;
-float vertical_scaling = 60;
+const int SPHERES_INIT_HEIGHT = config::TERRAIN_SIZE_M.x/5;
+float vertical_scaling = 95;
 }
 
 static bool check_opengl() {

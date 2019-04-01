@@ -3,7 +3,7 @@
 
 #include <glm/glm.hpp>
 #include "shaders.h"
-#include "misc/heightmap.c"
+#include "misc/heightmap2.c"
 
 namespace terrain {
 GLuint terrainVAO, vertexBuffer, elementBuffer;
