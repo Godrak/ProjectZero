@@ -8,8 +8,11 @@ struct InstanceData
 	float size_x; float size_y; float size_y;
 	float color_x; float color_y; float color_z;
 	float pos_x; float pos_y; float pos_z;
+	float speed_x; float speed_y; float speed_z;
+	float vel_x; float vel_y; float vel_z;
 	
 };
+
 
 layout (std430, binding=0) buffer InstanceBuffer
 {

@@ -13,6 +13,8 @@ GLint heightmap_location = 1;
 GLint terrain_size_location = 2;
 GLint vertical_scaling_location = 3;
 GLint camera_position_location = 4;
+GLint gravity_location = 5;
+GLint time_delta_location = 6;
 }
 
 namespace config {
@@ -21,8 +23,10 @@ const float VERTEX_PER_METER = 0.05;
 const glm::vec2 TERRAIN_SIZE_M = { 1000, 1000 };
 const int TERRAIN_X = TERRAIN_SIZE_M.x * VERTEX_PER_METER;
 const int TERRAIN_Z = TERRAIN_SIZE_M.y * VERTEX_PER_METER;
-const int SPHERES_INIT_HEIGHT = config::TERRAIN_SIZE_M.x/5;
+const int SPHERES_INIT_HEIGHT = config::TERRAIN_SIZE_M.x / 5;
 float vertical_scaling = 95;
+
+glm::vec3 gravity = { 0, -10, 0 };
 }
 
 static bool check_opengl() {

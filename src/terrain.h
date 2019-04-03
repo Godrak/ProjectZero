@@ -7,7 +7,7 @@
 
 namespace terrain {
 GLuint terrainVAO, vertexBuffer, elementBuffer;
-GLuint heightmap_tex, heightmap_sampler;
+GLuint heightmap_tex;
 GLint vpos_location = 0;
 GLint vcol_location = 1;
 
@@ -59,8 +59,8 @@ void prepareData() {
 }
 
 void initHeightmapTex() {
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 

@@ -10,7 +10,8 @@ namespace shaderProgram {
 GLuint terrain_v_shader, terrain_tc_shader, terrain_tes_shader,
 		terrain_f_shader, terrain_program;
 
-GLuint spheres_v_shader, spheres_f_shader, spheres_program;
+GLuint spheres_v_shader, spheres_f_shader, spheres_com_shader, spheres_program,
+		spheres_compute_program;
 
 bool check_shader(std::string source, GLuint id, GLenum st) {
 	GLint logLength;
@@ -85,6 +86,8 @@ void createSpheresProgram() {
 	GL_VERTEX_SHADER);
 	loadAndCompileShader("spheres_shaders/f_shader.glsl", spheres_f_shader,
 	GL_FRAGMENT_SHADER);
+	loadAndCompileShader("spheres_shaders/com_shader.glsl", spheres_com_shader,
+	GL_COMPUTE_SHADER);
 
 	spheres_program = glCreateProgram();
 	glAttachShader(spheres_program, spheres_v_shader);
@@ -92,6 +95,13 @@ void createSpheresProgram() {
 	glLinkProgram(spheres_program);
 	if (!check_program(spheres_program, GL_LINK_STATUS))
 		exit(-1);
+
+	spheres_compute_program = glCreateProgram();
+	glAttachShader(spheres_compute_program, spheres_com_shader);
+	glLinkProgram(spheres_compute_program);
+	if (!check_program(spheres_compute_program, GL_LINK_STATUS))
+		exit(-1);
+
 }
 }
 

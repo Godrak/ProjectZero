@@ -175,9 +175,14 @@ int main(void) {
 	terrain::init();
 	spheres::init();
 	checkGl();
+	float lastTime = float(glfwGetTime());
+	float time = float(glfwGetTime());
 
 	fps::fps_start();
 	while (!glfwWindowShouldClose(glfwContext::window)) {
+		time = float(glfwGetTime());
+		auto delta = time - lastTime;
+		lastTime = time;
 		glfwGetFramebufferSize(glfwContext::window, &globals::screenWidth,
 				&globals::screenHeight);
 
@@ -206,11 +211,31 @@ int main(void) {
 				config::vertical_scaling);
 		glUniform3fv(globals::camera_position_location, 1,
 				glm::value_ptr(camera::position));
-
+		glUniform1i(globals::heightmap_location, 0);
 
 		glPatchParameteri(GL_PATCH_VERTICES, 3);
 		glDrawElements(GL_PATCHES, terrain::indicesData.size(), GL_UNSIGNED_INT,
 				0);
+		glUseProgram(0);
+		glBindVertexArray(0);
+
+		//DEFORMATION AND PHYSICS COMPUTE SHADER DISPATCH
+		glUseProgram(shaderProgram::spheres_compute_program);
+		glBindVertexArray(spheres::spheresVAO);
+
+		glUniform2f(globals::terrain_size_location, config::TERRAIN_SIZE_M.x,
+				config::TERRAIN_SIZE_M.y);
+		glUniform1f(globals::vertical_scaling_location,
+				config::vertical_scaling);
+		glUniform3fv(globals::camera_position_location, 1,
+				glm::value_ptr(camera::position));
+		glUniform1i(globals::heightmap_location, 0);
+		glUniform3fv(globals::gravity_location, 1,
+				glm::value_ptr(config::gravity));
+		glUniform1f(globals::time_delta_location, delta);
+
+		glDispatchCompute(spheres::instanceCount, 1, 1);
+
 		glUseProgram(0);
 		glBindVertexArray(0);
 
@@ -222,7 +247,7 @@ int main(void) {
 				glm::value_ptr(model_view_projection));
 
 		glDrawElementsInstanced(GL_TRIANGLES, spheres::indicesData.size(),
-				GL_UNSIGNED_INT, 0, spheres::instanceCount);
+		GL_UNSIGNED_INT, 0, spheres::instanceCount);
 
 		glUseProgram(0);
 		glBindVertexArray(0);

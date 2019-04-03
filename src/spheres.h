@@ -21,6 +21,8 @@ struct sphereInfo {
 	glm::vec3 size;
 	glm::vec3 color;
 	glm::vec3 worldPosition;
+	glm::vec3 speed = { 0, 0, 0 };
+	glm::vec3 velocity = { 0, 0, 0 };
 
 	sphereInfo(glm::vec3 s, glm::vec3 col, glm::vec3 pos) :
 			size(s), color(col), worldPosition(pos) {
@@ -34,9 +36,10 @@ std::vector<sphereInfo> spheres;
 
 const unsigned int rings = 10;
 const unsigned int sectors = 10;
-const unsigned int instanceCount = 100;
+const unsigned int instanceCount = 30;
 
 GLuint spheresVAO, vertexBuffer, elementBuffer, instancingBuffer;
+GLuint deformationTexture;
 GLint vertexPositionLocation = 0;
 GLint instancingBufferBinding = 0;
 
@@ -77,11 +80,18 @@ void prepareData() {
 		float blue = 2 - red - green;
 
 		glm::vec3 color = { red, green, blue };
-		glm::vec3 pos = { 2 + (config::TERRAIN_SIZE_M.x-4) * (rand() / float(RAND_MAX)),
-				config::SPHERES_INIT_HEIGHT, 0+ (config::TERRAIN_SIZE_M.y-4)
-						* (rand() / float(RAND_MAX)) };
+		glm::vec3 pos = { 2
+				+ (config::TERRAIN_SIZE_M.x - 4) * (rand() / float(RAND_MAX)),
+				config::SPHERES_INIT_HEIGHT, 0
+						+ (config::TERRAIN_SIZE_M.y - 4)
+								* (rand() / float(RAND_MAX)) };
 		spheres.push_back(sphereInfo { size, color, pos });
 	}
+}
+
+void initDeformationTexture() {
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32UI, 1024, 1024, 0, GL_RED_INTEGER,
+	GL_UNSIGNED_INT, uint32_t(0));
 }
 
 void init() {
@@ -98,6 +108,12 @@ void init() {
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, instancingBuffer);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, instancingBufferBinding,
 			instancingBuffer);
+
+	glActiveTexture(GL_TEXTURE1);
+	glGenTextures(1, &deformationTexture);
+	glBindTexture(GL_TEXTURE_2D, deformationTexture);
+
+	initDeformationTexture();
 
 	checkGl();
 
