@@ -14,6 +14,7 @@
 #include "shaders.h"
 #include "terrain.h"
 #include "spheres.h"
+#include "snow.h"
 
 namespace fps {
 static double fpsOrigin = 0.0;
@@ -172,8 +173,10 @@ int main(void) {
 	glfwContext::initGlfw();
 	shaderProgram::createTerrainProgram();
 	shaderProgram::createSpheresProgram();
+	shaderProgram::createSnowProgram(); //MUST BE AFTER TERRAIN
 	terrain::init();
 	spheres::init();
+	snow::init(); //MUST BE AFTER TERRAIN
 	checkGl();
 	float lastTime = float(glfwGetTime());
 	float time = float(glfwGetTime());
@@ -198,27 +201,6 @@ int main(void) {
 		camera::applyViewTransform(model_view_projection);
 		camera::applyProjectionTransform(model_view_projection);
 
-		//TERRAIN DRAW
-		glUseProgram(shaderProgram::terrain_program);
-		glBindVertexArray(terrain::terrainVAO);
-
-		glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE,
-				glm::value_ptr(model_view_projection));
-
-		glUniform2f(globals::terrain_size_location, config::TERRAIN_SIZE_M.x,
-				config::TERRAIN_SIZE_M.y);
-		glUniform1f(globals::vertical_scaling_location,
-				config::vertical_scaling);
-		glUniform3fv(globals::camera_position_location, 1,
-				glm::value_ptr(camera::position));
-		glUniform1i(globals::heightmap_location, 0);
-
-		glPatchParameteri(GL_PATCH_VERTICES, 3);
-		glDrawElements(GL_PATCHES, terrain::indicesData.size(), GL_UNSIGNED_INT,
-				0);
-		glUseProgram(0);
-		glBindVertexArray(0);
-
 		//DEFORMATION AND PHYSICS COMPUTE SHADER DISPATCH
 		glUseProgram(shaderProgram::spheres_compute_program);
 		glBindVertexArray(spheres::spheresVAO);
@@ -233,9 +215,56 @@ int main(void) {
 		glUniform3fv(globals::gravity_location, 1,
 				glm::value_ptr(config::gravity));
 		glUniform1f(globals::time_delta_location, delta);
+		glUniform1f(globals::pixel_resolution_location,
+				config::pixel_resolution);
+		glUniform1i(globals::deformation_texture_location, 1); //1 is the texture unit with deform texture
 
 		glDispatchCompute(spheres::instanceCount, 1, 1);
 
+		glUseProgram(0);
+		glBindVertexArray(0);
+
+		//TERRAIN DRAW
+		glUseProgram(shaderProgram::terrain_program);
+		glBindVertexArray(terrain::terrainVAO);
+
+		glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE,
+				glm::value_ptr(model_view_projection));
+
+		glUniform2f(globals::terrain_size_location, config::TERRAIN_SIZE_M.x,
+				config::TERRAIN_SIZE_M.y);
+		glUniform1f(globals::vertical_scaling_location,
+				config::vertical_scaling);
+		glUniform3fv(globals::camera_position_location, 1,
+				glm::value_ptr(camera::position));
+		glUniform1i(globals::heightmap_location, 0); //0 is the texture unit containing heightmap
+
+		glPatchParameteri(GL_PATCH_VERTICES, 3);
+		glDrawElements(GL_PATCHES, terrain::indicesData.size(), GL_UNSIGNED_INT,
+				0);
+		glUseProgram(0);
+		glBindVertexArray(0);
+
+		//SNOW DRAW
+		glUseProgram(shaderProgram::snow_program);
+		glBindVertexArray(terrain::terrainVAO); //reusing terrain VAO on purpose
+
+		glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE,
+				glm::value_ptr(model_view_projection));
+
+		glUniform2f(globals::terrain_size_location, config::TERRAIN_SIZE_M.x,
+				config::TERRAIN_SIZE_M.y);
+		glUniform1f(globals::vertical_scaling_location,
+				config::vertical_scaling);
+		glUniform3fv(globals::camera_position_location, 1,
+				glm::value_ptr(camera::position));
+		glUniform1i(globals::heightmap_location, 0); //0 is the texture unit containing heightmap
+		glUniform1i(globals::deformation_texture_location, 1); //1 is the texture unit containing deformation texture
+		glUniform1f(globals::snow_height_location, config::snow_height); //1 is the texture unit containing deformation texture
+
+		glPatchParameteri(GL_PATCH_VERTICES, 3);
+		glDrawElements(GL_PATCHES, terrain::indicesData.size(), GL_UNSIGNED_INT,
+				0);
 		glUseProgram(0);
 		glBindVertexArray(0);
 

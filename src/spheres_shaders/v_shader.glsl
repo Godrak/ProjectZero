@@ -10,7 +10,7 @@ struct InstanceData
 	float pos_x; float pos_y; float pos_z;
 	float speed_x; float speed_y; float speed_z;
 	float vel_x; float vel_y; float vel_z;
-	
+	float artists_scale;
 };
 
 

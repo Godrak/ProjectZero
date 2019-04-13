@@ -13,6 +13,8 @@ GLuint terrain_v_shader, terrain_tc_shader, terrain_tes_shader,
 GLuint spheres_v_shader, spheres_f_shader, spheres_com_shader, spheres_program,
 		spheres_compute_program;
 
+GLuint snow_tes_shader, snow_program;
+
 bool check_shader(std::string source, GLuint id, GLenum st) {
 	GLint logLength;
 	glGetShaderiv(id, GL_INFO_LOG_LENGTH, &logLength);
@@ -78,6 +80,20 @@ void createTerrainProgram() {
 	glAttachShader(terrain_program, terrain_f_shader);
 	glLinkProgram(terrain_program);
 	if (!check_program(terrain_program, GL_LINK_STATUS))
+		exit(-1);
+}
+
+//WARNING: terrain program must have been already created!!!
+void createSnowProgram() {
+	loadAndCompileShader("snow_shaders/tes_shader.glsl", snow_tes_shader,
+	GL_TESS_EVALUATION_SHADER);
+	snow_program = glCreateProgram();
+	glAttachShader(snow_program, terrain_v_shader);
+	glAttachShader(snow_program, terrain_tc_shader);
+	glAttachShader(snow_program, snow_tes_shader);
+	glAttachShader(snow_program, terrain_f_shader);
+	glLinkProgram(snow_program);
+	if (!check_program(snow_program, GL_LINK_STATUS))
 		exit(-1);
 }
 

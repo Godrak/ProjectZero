@@ -15,6 +15,9 @@ GLint vertical_scaling_location = 3;
 GLint camera_position_location = 4;
 GLint gravity_location = 5;
 GLint time_delta_location = 6;
+GLint deformation_texture_location = 7;
+GLint pixel_resolution_location = 8;
+GLint snow_height_location = 9;
 }
 
 namespace config {
@@ -24,8 +27,10 @@ const glm::vec2 TERRAIN_SIZE_M = { 1000, 1000 };
 const int TERRAIN_X = TERRAIN_SIZE_M.x * VERTEX_PER_METER;
 const int TERRAIN_Z = TERRAIN_SIZE_M.y * VERTEX_PER_METER;
 const int SPHERES_INIT_HEIGHT = config::TERRAIN_SIZE_M.x / 5;
-float vertical_scaling = 95;
-
+const int MAX_SPHERE_SIZE = 15;
+float vertical_scaling = 150;
+float pixel_resolution = 0.08;
+float snow_height = 2;
 glm::vec3 gravity = { 0, -10, 0 };
 }
 

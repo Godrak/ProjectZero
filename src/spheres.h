@@ -23,9 +23,10 @@ struct sphereInfo {
 	glm::vec3 worldPosition;
 	glm::vec3 speed = { 0, 0, 0 };
 	glm::vec3 velocity = { 0, 0, 0 };
+	float artistsScale;
 
-	sphereInfo(glm::vec3 s, glm::vec3 col, glm::vec3 pos) :
-			size(s), color(col), worldPosition(pos) {
+	sphereInfo(glm::vec3 s, glm::vec3 col, glm::vec3 pos, float artScale) :
+			size(s), color(col), worldPosition(pos), artistsScale(artScale) {
 
 	}
 };
@@ -73,7 +74,7 @@ void prepareData() {
 	createUnitSphere();
 
 	for (int i = 0; i < instanceCount; ++i) {
-		auto s = 8 * (1 + rand() / float(RAND_MAX));
+		auto s = 2 + config::MAX_SPHERE_SIZE * rand() / float(RAND_MAX);
 		glm::vec3 size = { s, s, s };
 		float red = rand() / float(RAND_MAX);
 		float green = rand() / float(RAND_MAX);
@@ -85,7 +86,7 @@ void prepareData() {
 				config::SPHERES_INIT_HEIGHT, 0
 						+ (config::TERRAIN_SIZE_M.y - 4)
 								* (rand() / float(RAND_MAX)) };
-		spheres.push_back(sphereInfo { size, color, pos });
+		spheres.push_back(sphereInfo { size, color, pos, size.x });
 	}
 }
 
