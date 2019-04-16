@@ -8,7 +8,7 @@ layout(location = 3) uniform float vertical_scaling;
 layout(location = 4) uniform vec3 camera_position;
 layout(location = 5) uniform vec3 gravity;
 layout(location = 6) uniform float time_delta;
-layout(rg32ui, location = 7) uniform uimage2D deformation_texture;
+layout(r32ui, location = 7) uniform uimage2D deformation_texture;
 layout(location = 8) uniform float pixel_resolution;
 
 struct InstanceData
@@ -110,15 +110,15 @@ void deformSnow(){
 		
 		vec2 camera_delta = deff_pos - camera_position.xz;
 		
-		vec2 pixel_delta = camera_delta/pixel_resolution;
-		ivec2 tex_coords = ivec2(round((pixel_delta)/texture_size+0.5));
+		vec2 pixel_delta = camera_delta*pixel_resolution;
+		ivec2 tex_coords = ivec2(round( pixel_delta+texture_size/2 ));
 		
-		if (insideBox(tex_coords, vec2(0,0), vec2(1,1))==1){
+		//if (insideBox(tex_coords, vec2(0,0), vec2(1,1))==1){
 			uint def = uint(round(deformation_height)) << 16;
 			uint height = uint(round(deform_point));
 			uint res = def | height;
 			imageAtomicMin(deformation_texture, tex_coords, res);
-		}
+		//}
 			
 	}
 	}

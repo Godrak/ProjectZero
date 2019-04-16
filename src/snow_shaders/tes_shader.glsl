@@ -7,7 +7,8 @@ layout(location = 1) uniform sampler2D heightmap;
 layout(location = 2) uniform vec2 terrain_size;
 layout(location = 3) uniform float vertical_scaling;
 layout(location = 4) uniform vec3 camera_position;
-layout(location = 7) uniform sampler2D deformation_texture;
+layout(r32ui, location = 7) readonly uniform uimage2D deformation_texture;
+layout(location = 8) uniform float pixel_resolution;
 layout(location = 9) uniform float snow_height;
 
 
@@ -28,11 +29,27 @@ float getGroundHeight(float world_x, float world_z){
 	return height.x*vertical_scaling;
 }
 
+// return 1 if v inside the box, return 0 otherwise
+float insideBox(vec2 v, vec2 bottomLeft, vec2 topRight) {
+    vec2 s = step(bottomLeft, v) - step(topRight, v);
+    return s.x * s.y;   
+}
+
 float getDeformedHeight(vec3 world_pos){
 	float height = getGroundHeight(world_pos.x, world_pos.z)+snow_height;
 	
+	ivec2 texture_size = imageSize(deformation_texture);
+	vec2 camera_delta = world_pos.xz - camera_position.xz;
+	vec2 pixel_delta = camera_delta*pixel_resolution;
+	ivec2 tex_coords = ivec2(round( pixel_delta+texture_size/2 ));
 	
-	return height;
+	float deformation_height = height;
+	if (insideBox(tex_coords, vec2(0,0), texture_size)==1){
+		vec4 bytes = imageLoad(deformation_texture,tex_coords);
+		deformation_height += 10;
+	}
+
+	return deformation_height;
 }
 
 void main(){

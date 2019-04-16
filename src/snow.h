@@ -11,7 +11,7 @@ namespace snow {
 GLuint snowVAO;
 GLuint deform_texture_sampler;
 
-//WARNING the snow part relies on both terrain and spehres being already initialized!!!
+//WARNING the snow part relies on both terrain and spheres being already initialized!!!
 void init() {
 	//the snow is going to be very similar to the terrain,
 	// so I am going to reuse its VAO and bound the deformation texture to it,
@@ -20,14 +20,13 @@ void init() {
 	glBindVertexArray(snowVAO);
 
 	//binding deform texture to this VAO
+	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, spheres::deformationTexture);
 
-//	glGenSamplers(1, &deform_texture_sampler);
-//	glBindSampler(GL_TEXTURE1, deform_texture_sampler);
-//	glSamplerParameteri(deform_texture_sampler, GL_TEXTURE_MIN_FILTER, minMagFiler);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, minMagFiler);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	glBindVertexArray(0);
 }

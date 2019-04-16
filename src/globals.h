@@ -29,7 +29,7 @@ const int TERRAIN_Z = TERRAIN_SIZE_M.y * VERTEX_PER_METER;
 const int SPHERES_INIT_HEIGHT = config::TERRAIN_SIZE_M.x / 5;
 const int MAX_SPHERE_SIZE = 15;
 float vertical_scaling = 150;
-float pixel_resolution = 0.08;
+float pixel_resolution = 10; //pixels per meter
 float snow_height = 2;
 glm::vec3 gravity = { 0, -10, 0 };
 }

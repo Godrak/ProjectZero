@@ -176,7 +176,7 @@ int main(void) {
 	shaderProgram::createSnowProgram(); //MUST BE AFTER TERRAIN
 	terrain::init();
 	spheres::init();
-	snow::init(); //MUST BE AFTER TERRAIN
+	snow::init(); //MUST BE AFTER TERRAIN AND SPHERES
 	checkGl();
 	float lastTime = float(glfwGetTime());
 	float time = float(glfwGetTime());
@@ -247,7 +247,7 @@ int main(void) {
 
 		//SNOW DRAW
 		glUseProgram(shaderProgram::snow_program);
-		glBindVertexArray(terrain::terrainVAO); //reusing terrain VAO on purpose
+		glBindVertexArray(snow::snowVAO);
 
 		glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE,
 				glm::value_ptr(model_view_projection));
@@ -260,7 +260,8 @@ int main(void) {
 				glm::value_ptr(camera::position));
 		glUniform1i(globals::heightmap_location, 0); //0 is the texture unit containing heightmap
 		glUniform1i(globals::deformation_texture_location, 1); //1 is the texture unit containing deformation texture
-		glUniform1f(globals::snow_height_location, config::snow_height); //1 is the texture unit containing deformation texture
+		glUniform1f(globals::snow_height_location, config::snow_height);
+		glUniform1f(globals::pixel_resolution_location, config::pixel_resolution);
 
 		glPatchParameteri(GL_PATCH_VERTICES, 3);
 		glDrawElements(GL_PATCHES, terrain::indicesData.size(), GL_UNSIGNED_INT,
