@@ -37,7 +37,7 @@ std::vector<sphereInfo> spheres;
 
 const unsigned int rings = 10;
 const unsigned int sectors = 10;
-const unsigned int instanceCount = 30;
+const unsigned int instanceCount = 200;
 
 GLuint spheresVAO, vertexBuffer, elementBuffer, instancingBuffer;
 GLuint deformationTexture;
@@ -74,24 +74,24 @@ void prepareData() {
 	createUnitSphere();
 
 	for (int i = 0; i < instanceCount; ++i) {
-		auto s = 2 + config::MAX_SPHERE_SIZE * rand() / float(RAND_MAX);
+		auto s = config::sphereMinHeightU
+				+ (rand() / float(RAND_MAX))
+						* (config::sphereMaxHeightU - config::sphereMinHeightU);
 		glm::vec3 size = { s, s, s };
 		float red = rand() / float(RAND_MAX);
 		float green = rand() / float(RAND_MAX);
 		float blue = 2 - red - green;
 
 		glm::vec3 color = { red, green, blue };
-		glm::vec3 pos = { 2
-				+ (config::TERRAIN_SIZE_M.x - 4) * (rand() / float(RAND_MAX)),
-				config::SPHERES_INIT_HEIGHT, 0
-						+ (config::TERRAIN_SIZE_M.y - 4)
-								* (rand() / float(RAND_MAX)) };
-		spheres.push_back(sphereInfo { size, color, pos, size.x });
+		glm::vec3 pos = { config::terrainSizeU.x * (rand() / float(RAND_MAX)),
+				config::initSpheresAltitudeU, config::terrainSizeU.y
+						* (rand() / float(RAND_MAX)) };
+		spheres.push_back(sphereInfo { size, color, pos, 1/(size.x*size.x*size.x*size.x) });
 	}
 }
 
 void initDeformationTexture() {
-	std::vector<uint32_t> init_val(1024 * 1024, 1<<31);
+	std::vector<uint32_t> init_val(1024 * 1024, 1 << 31);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32UI, 1024, 1024, 0, GL_RED_INTEGER,
 	GL_UNSIGNED_INT, init_val.data());
 }
@@ -115,9 +115,9 @@ void init() {
 	glGenTextures(1, &deformationTexture);
 	glBindTexture(GL_TEXTURE_2D, deformationTexture);
 
-	//Now this one took very long to find out
+	//this one took very long to find out
 	glBindImageTexture(1, deformationTexture, 0, GL_FALSE, 0, GL_READ_WRITE,
-			GL_R32UI);
+	GL_R32UI);
 
 	initDeformationTexture();
 

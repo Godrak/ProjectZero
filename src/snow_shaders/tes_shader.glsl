@@ -50,6 +50,7 @@ float getDeformedHeight(vec3 world_pos){
 		uint def = res >> 16;
 		//uint height = unt(round(deform_point_height));
 		deformation_height = min(height, def);
+		color = vec3(1);
 	}
 
 	return deformation_height;
@@ -57,7 +58,7 @@ float getDeformedHeight(vec3 world_pos){
 
 void main(){
  	vec3 world_pos = interpolate3D(position_es[0], position_es[1], position_es[2]);
- 	color = vec3(1) ;//interpolate3D(color_es[0], color_es[1], color_es[2]);
+ 	color = vec3(1,1,0) ;//interpolate3D(color_es[0], color_es[1], color_es[2]);
  	
  	float height = getDeformedHeight(world_pos);
  	

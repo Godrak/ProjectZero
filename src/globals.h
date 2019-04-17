@@ -19,17 +19,22 @@ GLint snow_height_location = 9;
 }
 
 namespace config {
+const int unitsPerMeter = 10;
+const float verticesPerUnit = 0.01;
+const float verticesPerMeter = unitsPerMeter * verticesPerUnit;
 bool geometryMode = false;
-const float VERTEX_PER_METER = 0.05;
-const glm::vec2 TERRAIN_SIZE_M = { 1000, 1000 };
-const int TERRAIN_X = TERRAIN_SIZE_M.x * VERTEX_PER_METER;
-const int TERRAIN_Z = TERRAIN_SIZE_M.y * VERTEX_PER_METER;
-const int SPHERES_INIT_HEIGHT = config::TERRAIN_SIZE_M.x / 5;
-const int MAX_SPHERE_SIZE = 15;
-float vertical_scaling = 150;
-float pixel_resolution = 10; //pixels per meter
-float snow_height = 3;
-glm::vec3 gravity = { 0, -10, 0 };
+const glm::vec2 terrainSizeM = { 1000, 1000 };
+const glm::vec2 terrainSizeU = { terrainSizeM.x * unitsPerMeter, terrainSizeM.y
+		* unitsPerMeter };
+const int terrainVerticesX = terrainSizeM.x * verticesPerMeter;
+const int terrainVerticesZ = terrainSizeM.y * verticesPerMeter;
+const float sphereMinHeightU = 0.5 * unitsPerMeter;
+const float sphereMaxHeightU = 2 * unitsPerMeter;
+const int initSpheresAltitudeU = 1000;
+float verticalScaleU = 500;
+float pixelResolutionU = 1; //deformation texture - pixels per unit
+float snow_heightU = 2 * unitsPerMeter;
+glm::vec3 gravityU = { 0, -10 * unitsPerMeter, 0 };
 }
 
 static bool check_opengl() {

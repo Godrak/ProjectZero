@@ -24,8 +24,8 @@ std::vector<vertex> vertexData;
 std::vector<uint> indicesData;
 
 float readHeightmapValue(glm::vec2 position) {
-	float s = position.x / config::TERRAIN_SIZE_M.x;
-	float t = position.y / config::TERRAIN_SIZE_M.y;
+	float s = position.x / config::terrainSizeM.x;
+	float t = position.y / config::terrainSizeM.y;
 	auto heightmap_pos_x = s * gimp_image.width;
 	auto heightmap_pos_y = t * gimp_image.height;
 
@@ -33,27 +33,34 @@ float readHeightmapValue(glm::vec2 position) {
 			* heightmap_pos_y + heightmap_pos_x * gimp_image.bytes_per_pixel;
 
 	unsigned int value = gimp_image.pixel_data[linear_coord];
-	return (value/255.0f)*config::vertical_scaling;
+	return (value / 255.0f) * config::verticalScaleU;
 }
 
 void prepareData() {
-	for (int x = 0; x < config::TERRAIN_X; ++x) {
-		for (int z = 0; z < config::TERRAIN_Z; ++z) {
+	for (int x = 0; x < config::terrainVerticesX; ++x) {
+		for (int z = 0; z < config::terrainVerticesZ; ++z) {
 			vertexData.push_back(
-					{ { x / config::VERTEX_PER_METER, 0, z
-							/ config::VERTEX_PER_METER }, { 1.0, 0.0, 0.6 } });
+					{ { x * config::terrainSizeU.x / config::terrainVerticesX,
+							0, z * config::terrainSizeU.y
+									/ config::terrainVerticesZ }, { 1.0, 0.0,
+							0.6 } });
 		}
 	}
 	int offset = 0; //note: if i indices buffer already contains stuff for other objects
-	for (int x = 0; x < config::TERRAIN_X - 1; ++x) {
-		for (int z = 0; z < config::TERRAIN_Z - 1; ++z) {
-			indicesData.push_back(offset + x + 1 + z * config::TERRAIN_X);
-			indicesData.push_back(offset + x + z * config::TERRAIN_X);
-			indicesData.push_back(offset + x + (z + 1) * config::TERRAIN_X);
+	for (int x = 0; x < config::terrainVerticesX - 1; ++x) {
+		for (int z = 0; z < config::terrainVerticesZ - 1; ++z) {
+			indicesData.push_back(
+					offset + x + 1 + z * config::terrainVerticesX);
+			indicesData.push_back(offset + x + z * config::terrainVerticesX);
+			indicesData.push_back(
+					offset + x + (z + 1) * config::terrainVerticesX);
 
-			indicesData.push_back(offset + x + 1 + z * config::TERRAIN_X);
-			indicesData.push_back(offset + x + (z + 1) * config::TERRAIN_X);
-			indicesData.push_back(offset + x + 1 + (z + 1) * config::TERRAIN_X);
+			indicesData.push_back(
+					offset + x + 1 + z * config::terrainVerticesX);
+			indicesData.push_back(
+					offset + x + (z + 1) * config::terrainVerticesX);
+			indicesData.push_back(
+					offset + x + 1 + (z + 1) * config::terrainVerticesX);
 		}
 	}
 }

@@ -56,7 +56,7 @@ void physics(){
 
 	pos += time_delta*vel;
 	
-	float diff = 0.01;
+	float diff = 0.1;
 	float s = instanceData[gl_GlobalInvocationID.x].pos_x / terrain_size.x;
 	float t = instanceData[gl_GlobalInvocationID.x].pos_z / terrain_size.y;
 	float tex_val = texture(heightmap, vec2(s,t)).x;
@@ -73,12 +73,12 @@ void physics(){
 	if (pos.y - data.size_y < height+0.3){
 		//vel.y = 1;
 		pos.y = (height + data.size_y);
-		vel += dir;
+		vel += dir*10;
 	}
 	
 	vel += time_delta*gravity;
 	float l = length(vel);
-	vel = normalize(vel)*min(l,30);
+	vel = normalize(vel)*min(l,200);
 	
 	if (s < 0 || s > 1 || t < 0 || t > 1)
 		pos = vec3 (terrain_size.x/2, terrain_size.x, terrain_size.y/2);
@@ -97,12 +97,12 @@ float insideBox(vec2 v, vec2 bottomLeft, vec2 topRight) {
 void deformSnow(){
 	InstanceData data = instanceData[gl_GlobalInvocationID.x];
 	vec3 world_pos = vec3(data.pos_x, data.pos_y, data.pos_z);
-	float deform_point_height = world_pos.y-data.size_y;
+	float deform_point_height = world_pos.y-data.size_y/2;
 	ivec2 texture_size = imageSize(deformation_texture);
 	vec2 deform_point_loc = world_pos.xz;
 	
-	float mc = 2; // half the side of area of meters covered
-	for (int x = -int(round(mc*pixel_resolution)); x < mc*pixel_resolution; x++){ // meters * pixel_res = pixels, so we cover 4*4 meters
+	float mc = 10; // half the side of area of units covered
+	for (int x = -int(round(mc*pixel_resolution)); x < mc*pixel_resolution; x++){ // units * pixel_res (per unit) = pixels
 	for (int y = -int(round(mc*pixel_resolution)); y < mc*pixel_resolution; y++){
 		vec2 point_delta = vec2(x,y)/pixel_resolution;
 		vec2 point_loc = deform_point_loc + point_delta;

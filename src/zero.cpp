@@ -205,17 +205,16 @@ int main(void) {
 		glUseProgram(shaderProgram::spheres_compute_program);
 		glBindVertexArray(spheres::spheresVAO);
 
-		glUniform2f(globals::terrain_size_location, config::TERRAIN_SIZE_M.x,
-				config::TERRAIN_SIZE_M.y);
-		glUniform1f(globals::vertical_scaling_location,
-				config::vertical_scaling);
+		glUniform2f(globals::terrain_size_location, config::terrainSizeU.x,
+				config::terrainSizeU.y);
+		glUniform1f(globals::vertical_scaling_location, config::verticalScaleU);
 		glUniform3fv(globals::camera_position_location, 1,
 				glm::value_ptr(camera::position));
 		glUniform3fv(globals::gravity_location, 1,
-				glm::value_ptr(config::gravity));
+				glm::value_ptr(config::gravityU));
 		glUniform1f(globals::time_delta_location, delta);
 		glUniform1f(globals::pixel_resolution_location,
-				config::pixel_resolution);
+				config::pixelResolutionU);
 
 		glDispatchCompute(spheres::instanceCount, 1, 1);
 
@@ -229,10 +228,10 @@ int main(void) {
 		glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE,
 				glm::value_ptr(model_view_projection));
 
-		glUniform2f(globals::terrain_size_location, config::TERRAIN_SIZE_M.x,
-				config::TERRAIN_SIZE_M.y);
+		glUniform2f(globals::terrain_size_location, config::terrainSizeU.x,
+				config::terrainSizeU.y);
 		glUniform1f(globals::vertical_scaling_location,
-				config::vertical_scaling);
+				config::verticalScaleU);
 		glUniform3fv(globals::camera_position_location, 1,
 				glm::value_ptr(camera::position));
 
@@ -249,14 +248,15 @@ int main(void) {
 		glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE,
 				glm::value_ptr(model_view_projection));
 
-		glUniform2f(globals::terrain_size_location, config::TERRAIN_SIZE_M.x,
-				config::TERRAIN_SIZE_M.y);
+		glUniform2f(globals::terrain_size_location, config::terrainSizeU.x,
+				config::terrainSizeU.y);
 		glUniform1f(globals::vertical_scaling_location,
-				config::vertical_scaling);
+				config::verticalScaleU);
 		glUniform3fv(globals::camera_position_location, 1,
 				glm::value_ptr(camera::position));
-		glUniform1f(globals::snow_height_location, config::snow_height);
-		glUniform1f(globals::pixel_resolution_location, config::pixel_resolution);
+		glUniform1f(globals::snow_height_location, config::snow_heightU);
+		glUniform1f(globals::pixel_resolution_location,
+				config::pixelResolutionU);
 
 		glPatchParameteri(GL_PATCH_VERTICES, 3);
 		glDrawElements(GL_PATCHES, terrain::indicesData.size(), GL_UNSIGNED_INT,
