@@ -91,8 +91,9 @@ void prepareData() {
 }
 
 void initDeformationTexture() {
+	std::vector<uint32_t> init_val(1024 * 1024, 1<<31);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32UI, 1024, 1024, 0, GL_RED_INTEGER,
-	GL_UNSIGNED_INT, uint32_t(0));
+	GL_UNSIGNED_INT, init_val.data());
 }
 
 void init() {
@@ -114,10 +115,9 @@ void init() {
 	glGenTextures(1, &deformationTexture);
 	glBindTexture(GL_TEXTURE_2D, deformationTexture);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	//Now this one took very long to find out
+	glBindImageTexture(1, deformationTexture, 0, GL_FALSE, 0, GL_READ_WRITE,
+			GL_R32UI);
 
 	initDeformationTexture();
 

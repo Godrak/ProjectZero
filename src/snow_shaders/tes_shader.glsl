@@ -2,12 +2,13 @@
 
 layout(triangles, fractional_odd_spacing, ccw) in;
 
+layout(binding = 0) uniform sampler2D heightmap;
+layout(r32ui, binding = 1) uniform uimage2D deformation_texture;
+
 layout(location = 0) uniform mat4 mvp;
-layout(location = 1) uniform sampler2D heightmap;
 layout(location = 2) uniform vec2 terrain_size;
 layout(location = 3) uniform float vertical_scaling;
 layout(location = 4) uniform vec3 camera_position;
-layout(r32ui, location = 7) readonly uniform uimage2D deformation_texture;
 layout(location = 8) uniform float pixel_resolution;
 layout(location = 9) uniform float snow_height;
 
@@ -45,8 +46,10 @@ float getDeformedHeight(vec3 world_pos){
 	
 	float deformation_height = height;
 	if (insideBox(tex_coords, vec2(0,0), texture_size)==1){
-		vec4 bytes = imageLoad(deformation_texture,tex_coords);
-		deformation_height += 10;
+		uint res = uint(imageLoad(deformation_texture,tex_coords));
+		uint def = res >> 16;
+		//uint height = unt(round(deform_point_height));
+		deformation_height = min(height, def);
 	}
 
 	return deformation_height;

@@ -2,8 +2,9 @@
 
 layout(triangles, fractional_odd_spacing, ccw) in;
 
+layout(binding = 0) uniform sampler2D heightmap;
+
 layout(location = 0) uniform mat4 mvp;
-layout(location = 1) uniform sampler2D heightmap;
 layout(location = 2) uniform vec2 terrain_size;
 layout(location = 3) uniform float vertical_scaling;
 

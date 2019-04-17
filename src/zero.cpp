@@ -211,13 +211,11 @@ int main(void) {
 				config::vertical_scaling);
 		glUniform3fv(globals::camera_position_location, 1,
 				glm::value_ptr(camera::position));
-		glUniform1i(globals::heightmap_location, 0);
 		glUniform3fv(globals::gravity_location, 1,
 				glm::value_ptr(config::gravity));
 		glUniform1f(globals::time_delta_location, delta);
 		glUniform1f(globals::pixel_resolution_location,
 				config::pixel_resolution);
-		glUniform1i(globals::deformation_texture_location, 1); //1 is the texture unit with deform texture
 
 		glDispatchCompute(spheres::instanceCount, 1, 1);
 
@@ -237,7 +235,6 @@ int main(void) {
 				config::vertical_scaling);
 		glUniform3fv(globals::camera_position_location, 1,
 				glm::value_ptr(camera::position));
-		glUniform1i(globals::heightmap_location, 0); //0 is the texture unit containing heightmap
 
 		glPatchParameteri(GL_PATCH_VERTICES, 3);
 		glDrawElements(GL_PATCHES, terrain::indicesData.size(), GL_UNSIGNED_INT,
@@ -258,8 +255,6 @@ int main(void) {
 				config::vertical_scaling);
 		glUniform3fv(globals::camera_position_location, 1,
 				glm::value_ptr(camera::position));
-		glUniform1i(globals::heightmap_location, 0); //0 is the texture unit containing heightmap
-		glUniform1i(globals::deformation_texture_location, 1); //1 is the texture unit containing deformation texture
 		glUniform1f(globals::snow_height_location, config::snow_height);
 		glUniform1f(globals::pixel_resolution_location, config::pixel_resolution);
 

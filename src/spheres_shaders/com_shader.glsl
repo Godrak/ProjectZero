@@ -2,13 +2,14 @@
 
 layout (local_size_x = 1) in;
 
-layout(location = 1) uniform sampler2D heightmap;
+layout(binding = 0) uniform sampler2D heightmap;
+layout(r32ui, binding = 1) uniform uimage2D deformation_texture;
+
 layout(location = 2) uniform vec2 terrain_size;
 layout(location = 3) uniform float vertical_scaling;
 layout(location = 4) uniform vec3 camera_position;
 layout(location = 5) uniform vec3 gravity;
 layout(location = 6) uniform float time_delta;
-layout(r32ui, location = 7) uniform uimage2D deformation_texture;
 layout(location = 8) uniform float pixel_resolution;
 
 struct InstanceData
@@ -95,30 +96,30 @@ float insideBox(vec2 v, vec2 bottomLeft, vec2 topRight) {
 
 void deformSnow(){
 	InstanceData data = instanceData[gl_GlobalInvocationID.x];
-	vec3 pos = vec3(data.pos_x, data.pos_y, data.pos_z);
-	float deform_point = pos.y+data.size_y;
-	float centering = 32*pixel_resolution/2;
+	vec3 world_pos = vec3(data.pos_x, data.pos_y, data.pos_z);
+	float deform_point_height = world_pos.y-data.size_y;
 	ivec2 texture_size = imageSize(deformation_texture);
+	vec2 deform_point_loc = world_pos.xz;
 	
-	for (int x = 0; x < 32; x++){
-	for (int y =0; y < 32; y++){
-		vec2 delta_pos = vec2(x*pixel_resolution - centering, y*pixel_resolution - centering);
+	float mc = 2; // half the side of area of meters covered
+	for (int x = -int(round(mc*pixel_resolution)); x < mc*pixel_resolution; x++){ // meters * pixel_res = pixels, so we cover 4*4 meters
+	for (int y = -int(round(mc*pixel_resolution)); y < mc*pixel_resolution; y++){
+		vec2 point_delta = vec2(x,y)/pixel_resolution;
+		vec2 point_loc = deform_point_loc + point_delta;
 		
-		vec2 deff_pos = pos.xz + delta_pos;
-		float point_distance = length(delta_pos);
-		float deformation_height = deform_point + point_distance*point_distance*data.artists_scale;
-		
-		vec2 camera_delta = deff_pos - camera_position.xz;
-		
+		vec2 camera_delta = point_loc - camera_position.xz;
 		vec2 pixel_delta = camera_delta*pixel_resolution;
-		ivec2 tex_coords = ivec2(round( pixel_delta+texture_size/2 ));
+		ivec2 tex_coords = ivec2(round( pixel_delta+texture_size/2 )); //centering so that camera is in the middle
+	
+		float point_distance = length(point_delta);
+		float deformation_height = deform_point_height + point_distance*point_distance*data.artists_scale;
 		
-		//if (insideBox(tex_coords, vec2(0,0), vec2(1,1))==1){
+		if (insideBox(tex_coords, vec2(0,0), texture_size)==1){
 			uint def = uint(round(deformation_height)) << 16;
-			uint height = uint(round(deform_point));
+			uint height = uint(round(deform_point_height));
 			uint res = def | height;
 			imageAtomicMin(deformation_texture, tex_coords, res);
-		//}
+		}
 			
 	}
 	}

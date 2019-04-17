@@ -9,13 +9,11 @@ int screenWidth = 1600;
 int screenHeight = 900;
 
 GLint mvp_location = 0;
-GLint heightmap_location = 1;
 GLint terrain_size_location = 2;
 GLint vertical_scaling_location = 3;
 GLint camera_position_location = 4;
 GLint gravity_location = 5;
 GLint time_delta_location = 6;
-GLint deformation_texture_location = 7;
 GLint pixel_resolution_location = 8;
 GLint snow_height_location = 9;
 }
@@ -30,7 +28,7 @@ const int SPHERES_INIT_HEIGHT = config::TERRAIN_SIZE_M.x / 5;
 const int MAX_SPHERE_SIZE = 15;
 float vertical_scaling = 150;
 float pixel_resolution = 10; //pixels per meter
-float snow_height = 2;
+float snow_height = 3;
 glm::vec3 gravity = { 0, -10, 0 };
 }
 
