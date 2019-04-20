@@ -3,6 +3,7 @@
 
 #include <epoxy/gl.h>
 #include <iostream>
+#include <string>
 
 #include "globals.h"
 
@@ -14,6 +15,14 @@ GLuint spheres_v_shader, spheres_f_shader, spheres_com_shader, spheres_program,
 		spheres_compute_program;
 
 GLuint snow_tes_shader, snow_program;
+
+bool defferedShading = false;
+std::string getGlobalFragmentShader() {
+	if (defferedShading)
+		return "deffered_shaders/f_shader.glsl";
+	else
+		return "deffered_shaders/forward_f_shader.glsl";
+}
 
 bool check_shader(std::string source, GLuint id, GLenum st) {
 	GLint logLength;
@@ -70,8 +79,9 @@ void createTerrainProgram() {
 	GL_TESS_CONTROL_SHADER);
 	loadAndCompileShader("terrain_shaders/tes_shader.glsl", terrain_tes_shader,
 	GL_TESS_EVALUATION_SHADER);
-	loadAndCompileShader("terrain_shaders/f_shader.glsl", terrain_f_shader,
-	GL_FRAGMENT_SHADER);
+	loadAndCompileShader("deffered_shaders/forward_f_shader.glsl",
+			terrain_f_shader,
+			GL_FRAGMENT_SHADER);
 
 	terrain_program = glCreateProgram();
 	glAttachShader(terrain_program, terrain_v_shader);
@@ -100,8 +110,9 @@ void createSnowProgram() {
 void createSpheresProgram() {
 	loadAndCompileShader("spheres_shaders/v_shader.glsl", spheres_v_shader,
 	GL_VERTEX_SHADER);
-	loadAndCompileShader("spheres_shaders/f_shader.glsl", spheres_f_shader,
-	GL_FRAGMENT_SHADER);
+	loadAndCompileShader("deffered_shaders/forward_f_shader.glsl",
+			spheres_f_shader,
+			GL_FRAGMENT_SHADER);
 	loadAndCompileShader("spheres_shaders/com_shader.glsl", spheres_com_shader,
 	GL_COMPUTE_SHADER);
 

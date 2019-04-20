@@ -169,8 +169,120 @@ static void initGlfw() {
 
 }
 
-int main(void) {
-	glfwContext::initGlfw();
+namespace rendering {
+
+float lastTime;
+float currentTime;
+
+void switchConfiguration() {
+	if (config::geometryMode) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	} else {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+}
+
+void render() {
+	currentTime = float(glfwGetTime());
+	auto delta = currentTime - lastTime;
+	lastTime = currentTime;
+	glfwGetFramebufferSize(glfwContext::window, &globals::screenWidth,
+			&globals::screenHeight);
+
+	glViewport(0, 0, globals::screenWidth, globals::screenHeight);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+
+	camera::moveCamera(glfwContext::forth_back);
+	camera::moveCamera(glfwContext::up_down);
+	camera::moveCamera(glfwContext::left_right);
+
+	glm::mat4x4 model_view_projection = glm::mat4x4();
+	camera::applyViewTransform(model_view_projection);
+	camera::applyProjectionTransform(model_view_projection);
+
+	//DEFORMATION AND PHYSICS COMPUTE SHADER DISPATCH
+	glUseProgram(shaderProgram::spheres_compute_program);
+	glBindVertexArray(spheres::spheresVAO);
+
+	glUniform2f(globals::terrain_size_location, config::terrainSizeU.x,
+			config::terrainSizeU.y);
+	glUniform1f(globals::vertical_scaling_location, config::verticalScaleU);
+	glUniform3fv(globals::camera_position_location, 1,
+			glm::value_ptr(camera::position));
+	glUniform3fv(globals::gravity_location, 1,
+			glm::value_ptr(config::gravityU));
+	glUniform1f(globals::time_delta_location, delta);
+	glUniform1f(globals::pixel_resolution_location, config::pixelResolutionU);
+
+	glDispatchCompute(spheres::instanceCount, 1, 1);
+
+	glUseProgram(0);
+	glBindVertexArray(0);
+
+	//TERRAIN DRAW
+	glUseProgram(shaderProgram::terrain_program);
+	glBindVertexArray(terrain::terrainVAO);
+
+	glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE,
+			glm::value_ptr(model_view_projection));
+
+	glUniform2f(globals::terrain_size_location, config::terrainSizeU.x,
+			config::terrainSizeU.y);
+	glUniform1f(globals::vertical_scaling_location, config::verticalScaleU);
+	glUniform3fv(globals::camera_position_location, 1,
+			glm::value_ptr(camera::position));
+
+	glPatchParameteri(GL_PATCH_VERTICES, 3);
+	glDrawElements(GL_PATCHES, terrain::indicesData.size(), GL_UNSIGNED_INT, 0);
+	glUseProgram(0);
+	glBindVertexArray(0);
+
+	//SNOW DRAW
+	glUseProgram(shaderProgram::snow_program);
+	glBindVertexArray(snow::snowVAO);
+
+	glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE,
+			glm::value_ptr(model_view_projection));
+
+	glUniform2f(globals::terrain_size_location, config::terrainSizeU.x,
+			config::terrainSizeU.y);
+	glUniform1f(globals::vertical_scaling_location, config::verticalScaleU);
+	glUniform3fv(globals::camera_position_location, 1,
+			glm::value_ptr(camera::position));
+	glUniform1f(globals::snow_height_location, config::snow_heightU);
+	glUniform1f(globals::pixel_resolution_location, config::pixelResolutionU);
+
+	glPatchParameteri(GL_PATCH_VERTICES, 3);
+	glDrawElements(GL_PATCHES, terrain::indicesData.size(), GL_UNSIGNED_INT, 0);
+	glUseProgram(0);
+	glBindVertexArray(0);
+
+	//SPHERES DRAW
+	glUseProgram(shaderProgram::spheres_program);
+	glBindVertexArray(spheres::spheresVAO);
+
+	glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE,
+			glm::value_ptr(model_view_projection));
+
+	glDrawElementsInstanced(GL_TRIANGLES, spheres::indicesData.size(),
+	GL_UNSIGNED_INT, 0, spheres::instanceCount);
+
+	glUseProgram(0);
+	glBindVertexArray(0);
+
+	//SWAP BUFFERS
+	glfwSwapBuffers(glfwContext::window);
+	glfwPollEvents();
+	if (config::geometryMode) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	} else {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+	fps::fps_frame(true);
+}
+
+void setup() {
 	shaderProgram::createTerrainProgram();
 	shaderProgram::createSpheresProgram();
 	shaderProgram::createSnowProgram(); //MUST BE AFTER TERRAIN
@@ -178,114 +290,19 @@ int main(void) {
 	spheres::init();
 	snow::init(); //MUST BE AFTER TERRAIN AND SPHERES
 	checkGl();
-	float lastTime = float(glfwGetTime());
-	float time = float(glfwGetTime());
+}
 
+}
+
+int main() {
+	glfwContext::initGlfw();
+	rendering::lastTime = float(glfwGetTime());
+	rendering::currentTime = float(glfwGetTime());
+
+	rendering::setup();
 	fps::fps_start();
 	while (!glfwWindowShouldClose(glfwContext::window)) {
-		time = float(glfwGetTime());
-		auto delta = time - lastTime;
-		lastTime = time;
-		glfwGetFramebufferSize(glfwContext::window, &globals::screenWidth,
-				&globals::screenHeight);
-
-		glViewport(0, 0, globals::screenWidth, globals::screenHeight);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_DEPTH_TEST);
-
-		camera::moveCamera(glfwContext::forth_back);
-		camera::moveCamera(glfwContext::up_down);
-		camera::moveCamera(glfwContext::left_right);
-
-		glm::mat4x4 model_view_projection = glm::mat4x4();
-		camera::applyViewTransform(model_view_projection);
-		camera::applyProjectionTransform(model_view_projection);
-
-		//DEFORMATION AND PHYSICS COMPUTE SHADER DISPATCH
-		glUseProgram(shaderProgram::spheres_compute_program);
-		glBindVertexArray(spheres::spheresVAO);
-
-		glUniform2f(globals::terrain_size_location, config::terrainSizeU.x,
-				config::terrainSizeU.y);
-		glUniform1f(globals::vertical_scaling_location, config::verticalScaleU);
-		glUniform3fv(globals::camera_position_location, 1,
-				glm::value_ptr(camera::position));
-		glUniform3fv(globals::gravity_location, 1,
-				glm::value_ptr(config::gravityU));
-		glUniform1f(globals::time_delta_location, delta);
-		glUniform1f(globals::pixel_resolution_location,
-				config::pixelResolutionU);
-
-		glDispatchCompute(spheres::instanceCount, 1, 1);
-
-		glUseProgram(0);
-		glBindVertexArray(0);
-
-		//TERRAIN DRAW
-		glUseProgram(shaderProgram::terrain_program);
-		glBindVertexArray(terrain::terrainVAO);
-
-		glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE,
-				glm::value_ptr(model_view_projection));
-
-		glUniform2f(globals::terrain_size_location, config::terrainSizeU.x,
-				config::terrainSizeU.y);
-		glUniform1f(globals::vertical_scaling_location,
-				config::verticalScaleU);
-		glUniform3fv(globals::camera_position_location, 1,
-				glm::value_ptr(camera::position));
-
-		glPatchParameteri(GL_PATCH_VERTICES, 3);
-		glDrawElements(GL_PATCHES, terrain::indicesData.size(), GL_UNSIGNED_INT,
-				0);
-		glUseProgram(0);
-		glBindVertexArray(0);
-
-		//SNOW DRAW
-		glUseProgram(shaderProgram::snow_program);
-		glBindVertexArray(snow::snowVAO);
-
-		glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE,
-				glm::value_ptr(model_view_projection));
-
-		glUniform2f(globals::terrain_size_location, config::terrainSizeU.x,
-				config::terrainSizeU.y);
-		glUniform1f(globals::vertical_scaling_location,
-				config::verticalScaleU);
-		glUniform3fv(globals::camera_position_location, 1,
-				glm::value_ptr(camera::position));
-		glUniform1f(globals::snow_height_location, config::snow_heightU);
-		glUniform1f(globals::pixel_resolution_location,
-				config::pixelResolutionU);
-
-		glPatchParameteri(GL_PATCH_VERTICES, 3);
-		glDrawElements(GL_PATCHES, terrain::indicesData.size(), GL_UNSIGNED_INT,
-				0);
-		glUseProgram(0);
-		glBindVertexArray(0);
-
-		//SPHERES DRAW
-		glUseProgram(shaderProgram::spheres_program);
-		glBindVertexArray(spheres::spheresVAO);
-
-		glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE,
-				glm::value_ptr(model_view_projection));
-
-		glDrawElementsInstanced(GL_TRIANGLES, spheres::indicesData.size(),
-		GL_UNSIGNED_INT, 0, spheres::instanceCount);
-
-		glUseProgram(0);
-		glBindVertexArray(0);
-
-		//SWAP BUFFERS
-		glfwSwapBuffers(glfwContext::window);
-		glfwPollEvents();
-		if (config::geometryMode) {
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		} else {
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		}
-		fps::fps_frame(true);
+		rendering::render();
 	}
 
 	glfwDestroyWindow(glfwContext::window);

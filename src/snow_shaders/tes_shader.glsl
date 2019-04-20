@@ -16,7 +16,9 @@ layout(location = 9) uniform float snow_height;
 in vec3[] position_es;
 in vec3[] color_es;
 
-out vec3 color;
+out vec3 diffuse_color;
+out vec3 world_normal;
+out vec3 world_position;
 
 vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2)
 {
@@ -66,7 +68,7 @@ float ground_height = getGroundHeight(world_pos.x, world_pos.z);
 		//uint height = unt(round(deform_point_height));
 		deformation_height = min(height, def);
 		deformation_height = max(ground_height+0.3, deformation_height);
-		color = vec3(1);
+		diffuse_color = vec3(1);
 	}
 
 	return deformation_height;
@@ -74,10 +76,13 @@ float ground_height = getGroundHeight(world_pos.x, world_pos.z);
 
 void main(){
  	vec3 world_pos = interpolate3D(position_es[0], position_es[1], position_es[2]);
- 	color = vec3(1,1,0) ;//interpolate3D(color_es[0], color_es[1], color_es[2]);
+ 	diffuse_color = vec3(1,1,0) ;//interpolate3D(color_es[0], color_es[1], color_es[2]);
  	
  	float height = getDeformedHeight(world_pos);
  	
 	vec3 pos = vec3(world_pos.x, height ,world_pos.z);
+	world_position = pos;
+	world_normal = vec3(0,1,0);
+	
 	gl_Position = mvp*vec4(pos, 1.0);
 }

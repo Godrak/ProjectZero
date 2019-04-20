@@ -20,19 +20,19 @@ GLint snow_height_location = 9;
 
 namespace config {
 const int unitsPerMeter = 10;
-const float verticesPerUnit = 0.01;
+const float verticesPerUnit = 0.001*unitsPerMeter;
 const float verticesPerMeter = unitsPerMeter * verticesPerUnit;
 bool geometryMode = false;
-const glm::vec2 terrainSizeM = { 1000, 1000 };
+const glm::vec2 terrainSizeM = { 800, 800 };
 const glm::vec2 terrainSizeU = { terrainSizeM.x * unitsPerMeter, terrainSizeM.y
 		* unitsPerMeter };
 const int terrainVerticesX = terrainSizeM.x * verticesPerMeter;
 const int terrainVerticesZ = terrainSizeM.y * verticesPerMeter;
 const float sphereMinHeightU = 0.5 * unitsPerMeter;
 const float sphereMaxHeightU = 2 * unitsPerMeter;
-const int initSpheresAltitudeU = 1000;
-float verticalScaleU = 500;
-float pixelResolutionU = 0.5; //deformation texture - pixels per unit
+const int initSpheresAltitudeU = 100 * unitsPerMeter;
+float verticalScaleU = 50 * unitsPerMeter;
+float pixelResolutionU = 0.05 * unitsPerMeter; //deformation texture - pixels per unit
 float snow_heightU = 2 * unitsPerMeter;
 glm::vec3 gravityU = { 0, -10 * unitsPerMeter, 0 };
 }
