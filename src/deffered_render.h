@@ -14,7 +14,7 @@ GLuint gPosition, gNormal, gDiffuse, gDepth;
 
 void init() {
 	glGenFramebuffers(1, &gBuffer);
-	glBindFramebuffer(gBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
 
 	glActiveTexture(GL_TEXTURE2);
 	glGenTextures(1, &gPosition);
@@ -54,12 +54,11 @@ void init() {
 
 	unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1,
 	GL_COLOR_ATTACHMENT2 };
-	glNamedFramebufferDrawBuffers(gBuffer, attachments);
+	glNamedFramebufferDrawBuffers(gBuffer, 3, attachments);
 
 	checkGl();
 
-	glBindFramebuffer(0);
-
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 }
 

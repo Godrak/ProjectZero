@@ -15,6 +15,7 @@
 #include "terrain.h"
 #include "spheres.h"
 #include "snow.h"
+#include "deffered_render.h"
 
 namespace fps {
 static double fpsOrigin = 0.0;
@@ -190,8 +191,6 @@ void render() {
 			&globals::screenHeight);
 
 	glViewport(0, 0, globals::screenWidth, globals::screenHeight);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
 
 	camera::moveCamera(glfwContext::forth_back);
 	camera::moveCamera(glfwContext::up_down);
@@ -201,6 +200,11 @@ void render() {
 	camera::applyViewTransform(model_view_projection);
 	camera::applyProjectionTransform(model_view_projection);
 
+	if (config::defferedShading)
+		glBindFramebuffer(GL_FRAMEBUFFER, deffered_render::gBuffer);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
 	//DEFORMATION AND PHYSICS COMPUTE SHADER DISPATCH
 	glUseProgram(shaderProgram::spheres_compute_program);
 	glBindVertexArray(spheres::spheresVAO);
@@ -271,18 +275,29 @@ void render() {
 	glUseProgram(0);
 	glBindVertexArray(0);
 
+// DEFFERED SHADING STEP
+	if (config::defferedShading) {
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
+		glViewport(0, 0, globals::screenWidth, globals::screenHeight);
+		glUseProgram(shaderProgram::deffered_program);
+		glBindVertexArray(spheres::spheresVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	}
+
 	//SWAP BUFFERS
 	glfwSwapBuffers(glfwContext::window);
 	glfwPollEvents();
-	if (config::geometryMode) {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	} else {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
+	switchConfiguration();
 	fps::fps_frame(true);
 }
 
 void setup() {
+	deffered_render::init();
+	config::defferedShading = true;
+	shaderProgram::createDefferedProgram();
 	shaderProgram::createTerrainProgram();
 	shaderProgram::createSpheresProgram();
 	shaderProgram::createSnowProgram(); //MUST BE AFTER TERRAIN

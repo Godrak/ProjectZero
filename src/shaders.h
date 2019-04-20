@@ -16,10 +16,11 @@ GLuint spheres_v_shader, spheres_f_shader, spheres_com_shader, spheres_program,
 
 GLuint snow_tes_shader, snow_program;
 
-bool defferedShading = false;
+GLuint deffered_v_shader, deffered_f_shader, deffered_program;
+
 std::string getGlobalFragmentShader() {
-	if (defferedShading)
-		return "deffered_shaders/f_shader.glsl";
+	if (config::defferedShading)
+		return "deffered_shaders/deffered_f_shader.glsl";
 	else
 		return "deffered_shaders/forward_f_shader.glsl";
 }
@@ -104,6 +105,19 @@ void createSnowProgram() {
 	glAttachShader(snow_program, terrain_f_shader);
 	glLinkProgram(snow_program);
 	if (!check_program(snow_program, GL_LINK_STATUS))
+		exit(-1);
+}
+
+void createDefferedProgram() {
+	loadAndCompileShader("deffered_shaders/v_shader.glsl", deffered_v_shader,
+	GL_VERTEX_SHADER);
+	loadAndCompileShader("deffered_shaders/f_shader.glsl", deffered_f_shader,
+		GL_FRAGMENT_SHADER);
+	deffered_program = glCreateProgram();
+	glAttachShader(deffered_program, deffered_v_shader);
+	glAttachShader(deffered_program, deffered_f_shader);
+	glLinkProgram(deffered_program);
+	if (!check_program(deffered_program, GL_LINK_STATUS))
 		exit(-1);
 }
 

@@ -22,7 +22,6 @@ namespace config {
 const int unitsPerMeter = 10;
 const float verticesPerUnit = 0.001*unitsPerMeter;
 const float verticesPerMeter = unitsPerMeter * verticesPerUnit;
-bool geometryMode = false;
 const glm::vec2 terrainSizeM = { 800, 800 };
 const glm::vec2 terrainSizeU = { terrainSizeM.x * unitsPerMeter, terrainSizeM.y
 		* unitsPerMeter };
@@ -35,6 +34,10 @@ float verticalScaleU = 50 * unitsPerMeter;
 float pixelResolutionU = 0.05 * unitsPerMeter; //deformation texture - pixels per unit
 float snow_heightU = 2 * unitsPerMeter;
 glm::vec3 gravityU = { 0, -10 * unitsPerMeter, 0 };
+
+
+bool geometryMode = false;
+bool defferedShading = false;
 }
 
 static bool check_opengl() {
