@@ -32,7 +32,7 @@ const float sphereMinHeightU = 0.5 * unitsPerMeter;
 const float sphereMaxHeightU = 2 * unitsPerMeter;
 const int initSpheresAltitudeU = 1000;
 float verticalScaleU = 500;
-float pixelResolutionU = 1; //deformation texture - pixels per unit
+float pixelResolutionU = 0.5; //deformation texture - pixels per unit
 float snow_heightU = 2 * unitsPerMeter;
 glm::vec3 gravityU = { 0, -10 * unitsPerMeter, 0 };
 }

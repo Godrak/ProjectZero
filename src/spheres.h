@@ -86,7 +86,7 @@ void prepareData() {
 		glm::vec3 pos = { config::terrainSizeU.x * (rand() / float(RAND_MAX)),
 				config::initSpheresAltitudeU, config::terrainSizeU.y
 						* (rand() / float(RAND_MAX)) };
-		spheres.push_back(sphereInfo { size, color, pos, 1/(size.x*size.x*size.x*size.x) });
+		spheres.push_back(sphereInfo { size, color, pos, 1/(size.x*size.x) });
 	}
 }
 

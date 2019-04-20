@@ -36,20 +36,36 @@ float insideBox(vec2 v, vec2 bottomLeft, vec2 topRight) {
     return s.x * s.y;   
 }
 
-float getDeformedHeight(vec3 world_pos){
-	float height = getGroundHeight(world_pos.x, world_pos.z)+snow_height;
+vec2 wrap (vec2 world_pos, vec2 texture_size){
+	return world_pos-(texture_size*floor ( world_pos / texture_size));
+}
+
+ivec2 pointToTextureUV(vec2 point, vec2 world_texture_size){
+	vec2 camera_delta = point - camera_position.xz;
 	
-	ivec2 texture_size = imageSize(deformation_texture);
-	vec2 camera_delta = world_pos.xz - camera_position.xz;
-	vec2 pixel_delta = camera_delta*pixel_resolution;
-	ivec2 tex_coords = ivec2(round( pixel_delta+texture_size/2 ));
+	if (insideBox(camera_delta, -world_texture_size/2 + 1, world_texture_size/2 -1)==1){
+		vec2 point = wrap(point, world_texture_size);
+		ivec2 tex_coords = ivec2(round( point*pixel_resolution ));
+		return tex_coords;
+	} else {
+		return ivec2(-1,-1);
+	}
+}
+
+float getDeformedHeight(vec3 world_pos){
+float ground_height = getGroundHeight(world_pos.x, world_pos.z);
+	float height = ground_height+snow_height;
+	
+	vec2 world_texture_size = imageSize(deformation_texture)/pixel_resolution;
+	ivec2 tex_coords = pointToTextureUV(world_pos.xz, world_texture_size);
 	
 	float deformation_height = height;
-	if (insideBox(tex_coords, vec2(0,0), texture_size)==1){
+	if (tex_coords.x > -1){
 		uint res = uint(imageLoad(deformation_texture,tex_coords));
 		uint def = res >> 16;
 		//uint height = unt(round(deform_point_height));
 		deformation_height = min(height, def);
+		deformation_height = max(ground_height+0.3, deformation_height);
 		color = vec3(1);
 	}
 

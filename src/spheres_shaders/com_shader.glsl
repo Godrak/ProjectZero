@@ -94,27 +94,41 @@ float insideBox(vec2 v, vec2 bottomLeft, vec2 topRight) {
     return s.x * s.y;   
 }
 
+vec2 wrap (vec2 world_pos, vec2 texture_size){
+	return world_pos-(texture_size*floor ( world_pos / texture_size));
+}
+
+ivec2 pointToTextureUV(vec2 point, vec2 world_texture_size){
+	vec2 camera_delta = point - camera_position.xz;
+	
+	if (insideBox(camera_delta, -world_texture_size/2 + 1, world_texture_size/2 -1)==1){
+		vec2 point = wrap(point, world_texture_size);
+		ivec2 tex_coords = ivec2(round( point*pixel_resolution ));
+		return tex_coords;
+	} else {
+		return ivec2(-1,-1);
+	}
+}
+
 void deformSnow(){
 	InstanceData data = instanceData[gl_GlobalInvocationID.x];
 	vec3 world_pos = vec3(data.pos_x, data.pos_y, data.pos_z);
 	float deform_point_height = world_pos.y-data.size_y/2;
-	ivec2 texture_size = imageSize(deformation_texture);
+	vec2 world_texture_size = imageSize(deformation_texture)/pixel_resolution;
 	vec2 deform_point_loc = world_pos.xz;
 	
-	float mc = 10; // half the side of area of units covered
+	float mc = 20; // half the side of area of units covered
 	for (int x = -int(round(mc*pixel_resolution)); x < mc*pixel_resolution; x++){ // units * pixel_res (per unit) = pixels
 	for (int y = -int(round(mc*pixel_resolution)); y < mc*pixel_resolution; y++){
 		vec2 point_delta = vec2(x,y)/pixel_resolution;
 		vec2 point_loc = deform_point_loc + point_delta;
-		
-		vec2 camera_delta = point_loc - camera_position.xz;
-		vec2 pixel_delta = camera_delta*pixel_resolution;
-		ivec2 tex_coords = ivec2(round( pixel_delta+texture_size/2 )); //centering so that camera is in the middle
 	
 		float point_distance = length(point_delta);
 		float deformation_height = deform_point_height + point_distance*point_distance*data.artists_scale;
 		
-		if (insideBox(tex_coords, vec2(0,0), texture_size)==1){
+		ivec2 tex_coords = pointToTextureUV(point_loc, world_texture_size);
+		
+		if (tex_coords.x > -1){
 			uint def = uint(round(deformation_height)) << 16;
 			uint height = uint(round(deform_point_height));
 			uint res = def | height;
