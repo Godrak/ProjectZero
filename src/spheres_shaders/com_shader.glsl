@@ -70,9 +70,9 @@ void physics(){
 	
 	float height = tex_val.x*vertical_scaling;
 	
-	if (pos.y - data.size_y < height+0.3){
+	if (pos.y - data.size_y < height+0.5){
 		//vel.y = 1;
-		pos.y = (height + data.size_y);
+		pos.y = (height + data.size_y+0.5);
 		vel += dir*data.size_x;
 	}
 	
@@ -113,11 +113,11 @@ ivec2 pointToTextureUV(vec2 point, vec2 world_texture_size){
 void deformSnow(){
 	InstanceData data = instanceData[gl_GlobalInvocationID.x];
 	vec3 world_pos = vec3(data.pos_x, data.pos_y, data.pos_z);
-	float deform_point_height = world_pos.y-data.size_y/2;
+	float deform_point_height = world_pos.y-data.size_y;
 	vec2 world_texture_size = imageSize(deformation_texture)/pixel_resolution;
 	vec2 deform_point_loc = world_pos.xz;
 	
-	float mc = 20; // half the side of area of units covered
+	float mc = 50; // half the side of area of units covered
 	for (int x = -int(round(mc*pixel_resolution)); x < mc*pixel_resolution; x++){ // units * pixel_res (per unit) = pixels
 	for (int y = -int(round(mc*pixel_resolution)); y < mc*pixel_resolution; y++){
 		vec2 point_delta = vec2(x,y)/pixel_resolution;

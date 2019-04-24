@@ -226,6 +226,17 @@ void render() {
 	glUseProgram(0);
 	glBindVertexArray(0);
 
+	//SNOW FILL DISPATCH
+
+	glUseProgram(shaderProgram::snow_fill_program);
+	glUniform1f(globals::snow_fill_rate_location, config::snowFillRateEdgeU);
+	glUniform1f(globals::time_delta_location, delta);
+
+	glDispatchCompute(config::deformationTextureSize.x / 32,
+			config::deformationTextureSize.y / 32, 1);
+
+	glUseProgram(0);
+
 	//TERRAIN DRAW
 	glUseProgram(shaderProgram::terrain_program);
 	glBindVertexArray(terrain::terrainVAO);
@@ -300,7 +311,7 @@ void render() {
 
 void setup() {
 	deffered_render::init();
-	config::defferedShading = true;
+	config::defferedShading = false;
 	shaderProgram::createDefferedProgram();
 	shaderProgram::createTerrainProgram();
 	shaderProgram::createSpheresProgram();

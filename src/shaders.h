@@ -14,7 +14,8 @@ GLuint terrain_v_shader, terrain_tc_shader, terrain_tes_shader,
 GLuint spheres_v_shader, spheres_f_shader, spheres_com_shader, spheres_program,
 		spheres_compute_program;
 
-GLuint snow_tes_shader, snow_f_shader, snow_program;
+GLuint snow_tes_shader, snow_f_shader, snow_fill_shader, snow_program,
+		snow_fill_program;
 
 GLuint deffered_v_shader, deffered_f_shader, deffered_program;
 
@@ -108,6 +109,16 @@ void createSnowProgram() {
 	glLinkProgram(snow_program);
 	if (!check_program(snow_program, GL_LINK_STATUS))
 		exit(-1);
+
+	loadAndCompileShader("snow_shaders/com_snow_fill_shader.glsl",
+			snow_fill_shader,
+			GL_COMPUTE_SHADER);
+	snow_fill_program = glCreateProgram();
+	glAttachShader(snow_fill_program, snow_fill_shader);
+	glLinkProgram(snow_fill_program);
+	if (!check_program(snow_fill_program, GL_LINK_STATUS))
+		exit(-1);
+
 }
 
 void createDefferedProgram() {
@@ -121,6 +132,7 @@ void createDefferedProgram() {
 	glLinkProgram(deffered_program);
 	if (!check_program(deffered_program, GL_LINK_STATUS))
 		exit(-1);
+
 }
 
 void createSpheresProgram() {

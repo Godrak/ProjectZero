@@ -86,14 +86,16 @@ void prepareData() {
 		glm::vec3 pos = { config::terrainSizeU.x * (rand() / float(RAND_MAX)),
 				config::initSpheresAltitudeU, config::terrainSizeU.y
 						* (rand() / float(RAND_MAX)) };
-		spheres.push_back(sphereInfo { size, color, pos, 1/(size.x) });
+		spheres.push_back(
+				sphereInfo { size, color, pos, 15 / (size.x * size.x) });
 	}
 }
 
 void initDeformationTexture() {
 	std::vector<uint32_t> init_val(1024 * 1024, 1 << 31);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32UI, 1024, 1024, 0, GL_RED_INTEGER,
-	GL_UNSIGNED_INT, init_val.data());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32UI, config::deformationTextureSize.x,
+			config::deformationTextureSize.y, 0, GL_RED_INTEGER,
+			GL_UNSIGNED_INT, init_val.data());
 }
 
 void init() {

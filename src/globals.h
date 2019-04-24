@@ -17,6 +17,7 @@ GLint time_delta_location = 6;
 GLint pixel_resolution_location = 8;
 GLint snow_height_location = 9;
 GLint normal_offset_location = 10;
+GLint snow_fill_rate_location = 11;
 }
 
 namespace config {
@@ -36,7 +37,9 @@ float pixelResolutionU = 0.05*unitsPerMeter; //deformation texture - pixels per 
 float snow_heightU = 2 * unitsPerMeter;
 glm::vec3 gravityU = { 0, -10 * unitsPerMeter, 0 };
 float normalOffsetU = 0.5*unitsPerMeter;
+float snowFillRateEdgeU = snow_heightU*2; // units of snow per second
 
+glm::uvec2 deformationTextureSize = {1024,1024};
 
 bool geometryMode = false;
 bool defferedShading = false;
