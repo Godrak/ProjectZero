@@ -56,7 +56,7 @@ void physics(){
 
 	pos += time_delta*vel;
 	
-	float diff = 0.1;
+	float diff = 1;
 	float s = instanceData[gl_GlobalInvocationID.x].pos_x / terrain_size.x;
 	float t = instanceData[gl_GlobalInvocationID.x].pos_z / terrain_size.y;
 	float tex_val = texture(heightmap, vec2(s,t)).x;
@@ -73,7 +73,7 @@ void physics(){
 	if (pos.y - data.size_y < height+0.3){
 		//vel.y = 1;
 		pos.y = (height + data.size_y);
-		vel += dir*10;
+		vel += dir*data.size_x;
 	}
 	
 	vel += time_delta*gravity;
@@ -101,9 +101,9 @@ vec2 wrap (vec2 world_pos, vec2 texture_size){
 ivec2 pointToTextureUV(vec2 point, vec2 world_texture_size){
 	vec2 camera_delta = point - camera_position.xz;
 	
-	if (insideBox(camera_delta, -world_texture_size/2 + 1, world_texture_size/2 -1)==1){
+	if (insideBox(camera_delta, -world_texture_size/2, world_texture_size/2)==1){
 		vec2 point = wrap(point, world_texture_size);
-		ivec2 tex_coords = ivec2(round( point*pixel_resolution ));
+		ivec2 tex_coords = ivec2(floor( point*pixel_resolution ));
 		return tex_coords;
 	} else {
 		return ivec2(-1,-1);

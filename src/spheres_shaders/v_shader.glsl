@@ -20,13 +20,13 @@ layout (std430, binding=0) buffer InstanceBuffer
 };
 
 out vec3 diffuse_color;
-out vec3 world_normal;
+out vec3 model_position;
 out vec3 world_position;
 
 void main(){
 	InstanceData data = instanceData[gl_InstanceID];
 	diffuse_color = vec3(data.color_x,data.color_y, data.color_z);
-	world_normal = vertex_position; //vertex_position is in model coordinates, and the sphere is centered on 0,0,0
+	model_position = vertex_position; 
 	
 	vec3 pos = vertex_position*instanceData[gl_InstanceID].size_x;
 	pos += vec3(data.pos_x, data.pos_y, data.pos_z);

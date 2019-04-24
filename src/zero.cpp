@@ -200,8 +200,10 @@ void render() {
 	camera::applyViewTransform(model_view_projection);
 	camera::applyProjectionTransform(model_view_projection);
 
-	if (config::defferedShading)
+	if (config::defferedShading) {
 		glBindFramebuffer(GL_FRAMEBUFFER, deffered_render::gBuffer);
+		glDisable(GL_BLEND);
+	}
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
@@ -236,6 +238,7 @@ void render() {
 	glUniform1f(globals::vertical_scaling_location, config::verticalScaleU);
 	glUniform3fv(globals::camera_position_location, 1,
 			glm::value_ptr(camera::position));
+	glUniform1f(globals::normal_offset_location, config::normalOffsetU);
 
 	glPatchParameteri(GL_PATCH_VERTICES, 3);
 	glDrawElements(GL_PATCHES, terrain::indicesData.size(), GL_UNSIGNED_INT, 0);
@@ -256,6 +259,7 @@ void render() {
 			glm::value_ptr(camera::position));
 	glUniform1f(globals::snow_height_location, config::snow_heightU);
 	glUniform1f(globals::pixel_resolution_location, config::pixelResolutionU);
+	glUniform1f(globals::normal_offset_location, config::normalOffsetU);
 
 	glPatchParameteri(GL_PATCH_VERTICES, 3);
 	glDrawElements(GL_PATCHES, terrain::indicesData.size(), GL_UNSIGNED_INT, 0);

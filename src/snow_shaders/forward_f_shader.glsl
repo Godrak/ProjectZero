@@ -1,7 +1,6 @@
 #version 450
 
 in vec3 diffuse_color;
-in vec3 world_normal;
 in vec3	world_position;
 
 
