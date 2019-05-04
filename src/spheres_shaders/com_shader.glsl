@@ -11,6 +11,7 @@ layout(location = 4) uniform vec3 camera_position;
 layout(location = 5) uniform vec3 gravity;
 layout(location = 6) uniform float time_delta;
 layout(location = 8) uniform float pixel_resolution;
+layout(location = 12) uniform float velocity_limit;
 
 struct InstanceData
 {
@@ -78,7 +79,7 @@ void physics(){
 	
 	vel += time_delta*gravity;
 	float l = length(vel);
-	vel = normalize(vel)*min(l,200);
+	vel = normalize(vel)*min(l,velocity_limit);
 	
 	if (s < 0 || s > 1 || t < 0 || t > 1)
 		pos = vec3 (terrain_size.x/2, terrain_size.x, terrain_size.y/2);
@@ -117,7 +118,7 @@ void deformSnow(){
 	vec2 world_texture_size = imageSize(deformation_texture)/pixel_resolution;
 	vec2 deform_point_loc = world_pos.xz;
 	
-	float mc = 50; // half the side of area of units covered
+	float mc = 100; // half the side of area of units covered
 	for (int x = -int(round(mc*pixel_resolution)); x < mc*pixel_resolution; x++){ // units * pixel_res (per unit) = pixels
 	for (int y = -int(round(mc*pixel_resolution)); y < mc*pixel_resolution; y++){
 		vec2 point_delta = vec2(x,y)/pixel_resolution;

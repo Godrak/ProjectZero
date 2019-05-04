@@ -220,6 +220,7 @@ void render() {
 			glm::value_ptr(config::gravityU));
 	glUniform1f(globals::time_delta_location, delta);
 	glUniform1f(globals::pixel_resolution_location, config::pixelResolutionU);
+	glUniform1f(globals::veloctiy_limit_location, config::spheresVelocitiyLimit);
 
 	glDispatchCompute(spheres::instanceCount, 1, 1);
 
@@ -231,6 +232,9 @@ void render() {
 	glUseProgram(shaderProgram::snow_fill_program);
 	glUniform1f(globals::snow_fill_rate_location, config::snowFillRateEdgeU);
 	glUniform1f(globals::time_delta_location, delta);
+	glUniform1f(globals::pixel_resolution_location, config::pixelResolutionU);
+	glUniform3fv(globals::camera_position_location, 1,
+				glm::value_ptr(camera::position));
 
 	glDispatchCompute(config::deformationTextureSize.x / 32,
 			config::deformationTextureSize.y / 32, 1);

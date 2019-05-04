@@ -87,7 +87,7 @@ void prepareData() {
 				config::initSpheresAltitudeU, config::terrainSizeU.y
 						* (rand() / float(RAND_MAX)) };
 		spheres.push_back(
-				sphereInfo { size, color, pos, 15 / (size.x * size.x) });
+				sphereInfo { size, color, pos, 20 / (size.x * size.x) });
 	}
 }
 

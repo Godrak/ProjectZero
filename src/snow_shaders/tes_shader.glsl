@@ -52,6 +52,8 @@ ivec2 pointToTextureUV(vec2 point, vec2 world_texture_size){
 	}
 }
 
+
+
 float getDeformedHeight(vec2 world_pos){
 	float ground_height = getGroundHeight(world_pos);
 	float height = ground_height+snow_height;
