@@ -9,7 +9,7 @@
 static const glm::vec3 UP = { 0, 1, 0 };
 
 namespace camera {
-glm::vec3 position = { config::terrainSizeU.x/2, 100, config::terrainSizeU.y/2 };
+glm::vec3 position = { config::terrainSizeU.x/2, 150, config::terrainSizeU.y/2 };
 glm::vec3 direction = { 0, -1, 0.01};
 glm::vec3 up = { 0, 1, 0 };
 float stepSize = 180 / 60.0f;
