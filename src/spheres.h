@@ -87,12 +87,12 @@ void prepareData() {
 				config::initSpheresAltitudeU, config::terrainSizeU.y
 						* (rand() / float(RAND_MAX)) };
 		spheres.push_back(
-				sphereInfo { size, color, pos, 20 / (size.x * size.x) });
+				sphereInfo { size, color, pos, 50 / (size.x * size.x) });
 	}
 }
 
 void initDeformationTexture() {
-	std::vector<uint32_t> init_val(1024 * 1024, 1 << 31);
+	std::vector<uint32_t> init_val(1024 * 1024, 4294967295);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32UI, config::deformationTextureSize.x,
 			config::deformationTextureSize.y, 0, GL_RED_INTEGER,
 			GL_UNSIGNED_INT, init_val.data());

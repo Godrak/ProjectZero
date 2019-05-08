@@ -52,7 +52,32 @@ ivec2 pointToTextureUV(vec2 point, vec2 world_texture_size){
 	}
 }
 
+float computeDepressionOrElevation(float deformation_height, float deform_point_height, float total_height){
+	if (deform_point_height > total_height || 
+		total_height - deformation_height > 2*snow_height || 
+		total_height - deform_point_height <= 0)
+		return total_height;
+	
+	if (deformation_height < total_height)
+		return deformation_height;
 
+	float depression_distance = sqrt(total_height - deform_point_height);
+	float distance_from_foot = sqrt(deformation_height - deform_point_height);
+	float elevation_distance = distance_from_foot - depression_distance;
+	
+	float depression_depth = total_height - deform_point_height;
+	float maximum_elevation_distance  = 0.05*depression_depth;
+	
+	float ratio = elevation_distance / maximum_elevation_distance;
+	if (ratio > 1) return total_height;
+	
+	float height = maximum_elevation_distance * 1;
+	
+	float elevation = ((0.5-2*ratio)*(0.5-2*ratio) + 1 ) * height;
+	elevation = max(elevation, height);
+	
+	return total_height + elevation;
+}
 
 float getDeformedHeight(vec2 world_pos){
 	float ground_height = getGroundHeight(world_pos);
@@ -63,11 +88,12 @@ float getDeformedHeight(vec2 world_pos){
 	
 	float deformation_height = height;
 	if (tex_coords.x > -1){
+	
 		uint res = uint(imageLoad(deformation_texture,tex_coords));
-		uint def = res >> 16;
-		//uint height = unt(round(deform_point_height));
-		deformation_height = min(height, def);
-		deformation_height = max(ground_height+0.03, deformation_height);
+		uint deform_height = res >> 16;
+		uint deform_point_height = (res << 16) >> 16;
+		
+		deformation_height = computeDepressionOrElevation(deform_height, deform_point_height, height);
 	}
 
 	return deformation_height;
