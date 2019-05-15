@@ -8,14 +8,11 @@
 #include "globals.h"
 
 namespace shaderProgram {
-GLuint terrain_v_shader, terrain_tc_shader, terrain_tes_shader,
-		terrain_f_shader, terrain_program;
+GLuint terrain_v_shader, terrain_tc_shader, terrain_tes_shader, terrain_f_shader, terrain_program;
 
-GLuint spheres_v_shader, spheres_f_shader, spheres_com_shader, spheres_program,
-		spheres_compute_program;
+GLuint spheres_v_shader, spheres_f_shader, spheres_com_shader, spheres_program, spheres_compute_program;
 
-GLuint snow_tes_shader, snow_f_shader, snow_fill_shader, snow_program,
-		snow_fill_program;
+GLuint snow_tes_shader, snow_f_shader, snow_fill_shader, snow_program, snow_fill_program;
 
 GLuint deffered_v_shader, deffered_f_shader, deffered_program;
 
@@ -60,8 +57,7 @@ bool check_program(GLuint id, GLenum st) {
 	return (status == GL_TRUE);
 }
 
-void loadAndCompileShader(std::string source, GLuint& destination,
-		GLenum type) {
+void loadAndCompileShader(std::string source, GLuint& destination, GLenum type) {
 	std::ifstream shaderSource(source);
 	std::string shaderCode;
 	getline(shaderSource, shaderCode, (char) shaderSource.eof());
@@ -81,9 +77,8 @@ void createTerrainProgram() {
 	GL_TESS_CONTROL_SHADER);
 	loadAndCompileShader("terrain_shaders/tes_shader.glsl", terrain_tes_shader,
 	GL_TESS_EVALUATION_SHADER);
-	loadAndCompileShader(getFragmentShaderPath("terrain_shaders"),
-			terrain_f_shader,
-			GL_FRAGMENT_SHADER);
+	loadAndCompileShader(getFragmentShaderPath("terrain_shaders"), terrain_f_shader,
+	GL_FRAGMENT_SHADER);
 
 	terrain_program = glCreateProgram();
 	glAttachShader(terrain_program, terrain_v_shader);
@@ -110,9 +105,8 @@ void createSnowProgram() {
 	if (!check_program(snow_program, GL_LINK_STATUS))
 		exit(-1);
 
-	loadAndCompileShader("snow_shaders/com_snow_fill_shader.glsl",
-			snow_fill_shader,
-			GL_COMPUTE_SHADER);
+	loadAndCompileShader("snow_shaders/com_snow_fill_shader.glsl", snow_fill_shader,
+	GL_COMPUTE_SHADER);
 	snow_fill_program = glCreateProgram();
 	glAttachShader(snow_fill_program, snow_fill_shader);
 	glLinkProgram(snow_fill_program);
@@ -122,10 +116,21 @@ void createSnowProgram() {
 }
 
 void createDefferedProgram() {
-	loadAndCompileShader("deffered_shaders/v_shader.glsl", deffered_v_shader,
-	GL_VERTEX_SHADER);
-	loadAndCompileShader("deffered_shaders/f_shader.glsl", deffered_f_shader,
-	GL_FRAGMENT_SHADER);
+	if (config::lightVolumes)
+		loadAndCompileShader("deffered_shaders/v_shader_lights.glsl", deffered_v_shader,
+		GL_VERTEX_SHADER);
+	else
+		loadAndCompileShader("deffered_shaders/v_shader.glsl", deffered_v_shader,
+		GL_VERTEX_SHADER);
+
+	if (config::lightVolumes)
+		loadAndCompileShader("deffered_shaders/f_shader_lights.glsl", deffered_f_shader,
+		GL_FRAGMENT_SHADER);
+
+	else
+		loadAndCompileShader("deffered_shaders/f_shader.glsl", deffered_f_shader,
+		GL_FRAGMENT_SHADER);
+
 	deffered_program = glCreateProgram();
 	glAttachShader(deffered_program, deffered_v_shader);
 	glAttachShader(deffered_program, deffered_f_shader);
@@ -138,9 +143,8 @@ void createDefferedProgram() {
 void createSpheresProgram() {
 	loadAndCompileShader("spheres_shaders/v_shader.glsl", spheres_v_shader,
 	GL_VERTEX_SHADER);
-	loadAndCompileShader(getFragmentShaderPath("spheres_shaders"),
-			spheres_f_shader,
-			GL_FRAGMENT_SHADER);
+	loadAndCompileShader(getFragmentShaderPath("spheres_shaders"), spheres_f_shader,
+	GL_FRAGMENT_SHADER);
 	loadAndCompileShader("spheres_shaders/com_shader.glsl", spheres_com_shader,
 	GL_COMPUTE_SHADER);
 

@@ -67,8 +67,7 @@ static void error_callback(int error, const char *description) {
 	std::cout << "Error: " << description << std::endl;
 }
 
-static void key_callback(GLFWwindow *window, int key, int scancode, int action,
-		int mods) {
+static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
 	if (action == GLFW_PRESS) {
 		switch (key) {
 		case GLFW_KEY_ESCAPE:
@@ -132,8 +131,7 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action,
 	}
 }
 
-static void cursor_position_callback(GLFWwindow *window, double xpos,
-		double ypos) {
+static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos) {
 	glm::vec2 offset;
 	offset[0] = -xpos + last_xpos;
 	offset[1] = ypos - last_ypos;
@@ -154,8 +152,7 @@ static void initGlfw() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	window = glfwCreateWindow(globals::screenWidth, globals::screenHeight,
-			"ProjectZero", NULL, NULL);
+	window = glfwCreateWindow(globals::screenResolution.x, globals::screenResolution.y, "ProjectZero", NULL, NULL);
 	if (!window)
 		exit(-1);
 
@@ -187,10 +184,9 @@ void render() {
 	currentTime = float(glfwGetTime());
 	auto delta = currentTime - lastTime;
 	lastTime = currentTime;
-	glfwGetFramebufferSize(glfwContext::window, &globals::screenWidth,
-			&globals::screenHeight);
+	glfwGetFramebufferSize(glfwContext::window, &globals::screenResolution.x, &globals::screenResolution.y);
 
-	glViewport(0, 0, globals::screenWidth, globals::screenHeight);
+	glViewport(0, 0, globals::screenResolution.x, globals::screenResolution.y);
 
 	camera::moveCamera(glfwContext::forth_back);
 	camera::moveCamera(glfwContext::up_down);
@@ -203,6 +199,9 @@ void render() {
 	if (config::defferedShading) {
 		glBindFramebuffer(GL_FRAMEBUFFER, deffered_render::gBuffer);
 		glDisable(GL_BLEND);
+		glDepthMask(true);
+		glDisable(GL_CULL_FACE);
+
 	}
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -211,13 +210,10 @@ void render() {
 	glUseProgram(shaderProgram::spheres_compute_program);
 	glBindVertexArray(spheres::spheresVAO);
 
-	glUniform2f(globals::terrain_size_location, config::terrainSizeU.x,
-			config::terrainSizeU.y);
+	glUniform2f(globals::terrain_size_location, config::terrainSizeU.x, config::terrainSizeU.y);
 	glUniform1f(globals::vertical_scaling_location, config::verticalScaleU);
-	glUniform3fv(globals::camera_position_location, 1,
-			glm::value_ptr(camera::position));
-	glUniform3fv(globals::gravity_location, 1,
-			glm::value_ptr(config::gravityU));
+	glUniform3fv(globals::camera_position_location, 1, glm::value_ptr(camera::position));
+	glUniform3fv(globals::gravity_location, 1, glm::value_ptr(config::gravityU));
 	glUniform1f(globals::time_delta_location, delta);
 	glUniform1f(globals::pixel_resolution_location, config::pixelResolutionU);
 	glUniform1f(globals::veloctiy_limit_location, config::spheresVelocitiyLimit);
@@ -233,11 +229,9 @@ void render() {
 	glUniform1f(globals::snow_fill_rate_location, config::snowFillRateEdgeU);
 	glUniform1f(globals::time_delta_location, delta);
 	glUniform1f(globals::pixel_resolution_location, config::pixelResolutionU);
-	glUniform3fv(globals::camera_position_location, 1,
-				glm::value_ptr(camera::position));
+	glUniform3fv(globals::camera_position_location, 1, glm::value_ptr(camera::position));
 
-	glDispatchCompute(config::deformationTextureSize.x / 32,
-			config::deformationTextureSize.y / 32, 1);
+	glDispatchCompute(config::deformationTextureSize.x / 32, config::deformationTextureSize.y / 32, 1);
 
 	glUseProgram(0);
 
@@ -245,14 +239,11 @@ void render() {
 	glUseProgram(shaderProgram::terrain_program);
 	glBindVertexArray(terrain::terrainVAO);
 
-	glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE,
-			glm::value_ptr(model_view_projection));
+	glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE, glm::value_ptr(model_view_projection));
 
-	glUniform2f(globals::terrain_size_location, config::terrainSizeU.x,
-			config::terrainSizeU.y);
+	glUniform2f(globals::terrain_size_location, config::terrainSizeU.x, config::terrainSizeU.y);
 	glUniform1f(globals::vertical_scaling_location, config::verticalScaleU);
-	glUniform3fv(globals::camera_position_location, 1,
-			glm::value_ptr(camera::position));
+	glUniform3fv(globals::camera_position_location, 1, glm::value_ptr(camera::position));
 	glUniform1f(globals::normal_offset_location, config::normalOffsetU);
 
 	glPatchParameteri(GL_PATCH_VERTICES, 3);
@@ -264,14 +255,11 @@ void render() {
 	glUseProgram(shaderProgram::snow_program);
 	glBindVertexArray(snow::snowVAO);
 
-	glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE,
-			glm::value_ptr(model_view_projection));
+	glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE, glm::value_ptr(model_view_projection));
 
-	glUniform2f(globals::terrain_size_location, config::terrainSizeU.x,
-			config::terrainSizeU.y);
+	glUniform2f(globals::terrain_size_location, config::terrainSizeU.x, config::terrainSizeU.y);
 	glUniform1f(globals::vertical_scaling_location, config::verticalScaleU);
-	glUniform3fv(globals::camera_position_location, 1,
-			glm::value_ptr(camera::position));
+	glUniform3fv(globals::camera_position_location, 1, glm::value_ptr(camera::position));
 	glUniform1f(globals::snow_height_location, config::snow_heightU);
 	glUniform1f(globals::pixel_resolution_location, config::pixelResolutionU);
 	glUniform1f(globals::normal_offset_location, config::normalOffsetU);
@@ -285,8 +273,7 @@ void render() {
 	glUseProgram(shaderProgram::spheres_program);
 	glBindVertexArray(spheres::spheresVAO);
 
-	glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE,
-			glm::value_ptr(model_view_projection));
+	glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE, glm::value_ptr(model_view_projection));
 
 	glDrawElementsInstanced(GL_TRIANGLES, spheres::indicesData.size(),
 	GL_UNSIGNED_INT, 0, spheres::instanceCount);
@@ -296,13 +283,34 @@ void render() {
 
 // DEFFERED SHADING STEP
 	if (config::defferedShading) {
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
-		glViewport(0, 0, globals::screenWidth, globals::screenHeight);
+		glViewport(0, 0, globals::screenResolution.x, globals::screenResolution.y);
 		glUseProgram(shaderProgram::deffered_program);
 		glBindVertexArray(spheres::spheresVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		glDisable(GL_DEPTH_TEST);
+		glDepthMask(false);
+		glEnable(GL_BLEND);
+		glBlendEquation(GL_FUNC_ADD);
+		glBlendFunc(GL_ONE, GL_ONE);
+
+		glEnable(GL_CULL_FACE);
+
+		glCullFace(GL_BACK);
+
+		glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE, glm::value_ptr(model_view_projection));
+		glUniform2iv(globals::screen_size_location, 1, glm::value_ptr(globals::screenResolution));
+		glUniform3fv(globals::light_params_location, 1, glm::value_ptr(config::lightParams));
+		glUniform3fv(globals::camera_position_location, 1, glm::value_ptr(camera::position));
+
+		if (config::lightVolumes)
+		glDrawElementsInstanced(GL_TRIANGLES, spheres::indicesData.size(),
+				GL_UNSIGNED_INT, 0, spheres::instanceCount);
+		else
+			glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	}
 
@@ -316,6 +324,7 @@ void render() {
 void setup() {
 	deffered_render::init();
 	config::defferedShading = true;
+	config::lightVolumes = true;
 	shaderProgram::createDefferedProgram();
 	shaderProgram::createTerrainProgram();
 	shaderProgram::createSpheresProgram();

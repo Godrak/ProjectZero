@@ -55,6 +55,8 @@ void physics(){
 	vec3 pos = vec3(data.pos_x, data.pos_y, data.pos_z);
 	vec3 vel = vec3(data.vel_x, data.vel_y, data.vel_z);
 
+	vec3 col = vec3(data.color_x, data.color_y, data.color_z);
+
 	pos += time_delta*vel;
 	
 	float diff = 1;
@@ -82,7 +84,7 @@ void physics(){
 	vel = normalize(vel)*min(l,velocity_limit);
 	
 	if (s < 0 || s > 1 || t < 0 || t > 1)
-		pos = vec3 (terrain_size.x/2, terrain_size.x, terrain_size.y/2);
+		pos = vec3 (terrain_size.x*col.x, terrain_size.x, terrain_size.y*col.y);
 
 	writePos(pos);
 	writeVelocity(vel);

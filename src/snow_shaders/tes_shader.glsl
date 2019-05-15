@@ -55,27 +55,28 @@ ivec2 pointToTextureUV(vec2 point, vec2 world_texture_size){
 float computeDepressionOrElevation(float deformation_height, float deform_point_height, float total_height){
 	if (deform_point_height > total_height || 
 		total_height - deformation_height > 2*snow_height || 
+		total_height - deform_point_height > 2*snow_height ||
 		total_height - deform_point_height <= 0)
 		return total_height;
 	
 	if (deformation_height < total_height)
 		return deformation_height;
 
-	float depression_distance = sqrt(total_height - deform_point_height);
-	float distance_from_foot = sqrt(deformation_height - deform_point_height);
+	float depression_distance = sqrt(max(total_height - deform_point_height,0));
+	float distance_from_foot = sqrt(max(deformation_height - deform_point_height,0));
+	
+	float depression_depth = abs(total_height - deform_point_height);
+	if (depression_depth < 10) return total_height;
+	 
 	float elevation_distance = distance_from_foot - depression_distance;
+	float maximum_elevation_distance  = depression_depth*0.1;	
+	float ratio = abs(elevation_distance / maximum_elevation_distance);
 	
-	float depression_depth = total_height - deform_point_height;
-	float maximum_elevation_distance  = 0.05*depression_depth;
+	float height = maximum_elevation_distance*5;
+	float ratio6 = ratio*ratio*ratio*ratio*ratio*ratio;
+	float t = 2*sqrt((ratio)/(1+10*ratio6)) / (1+10*ratio*ratio);
 	
-	float ratio = elevation_distance / maximum_elevation_distance;
-	if (ratio > 1) return total_height;
-	
-	float height = maximum_elevation_distance * 1;
-	
-	float elevation = ((0.5-2*ratio)*(0.5-2*ratio) + 1 ) * height;
-	elevation = max(elevation, height);
-	
+	float elevation = t*height;
 	return total_height + elevation;
 }
 

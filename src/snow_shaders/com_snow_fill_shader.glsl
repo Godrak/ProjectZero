@@ -38,7 +38,7 @@ void main(){
 	if (lcoords.y > halfTexSize.y)
 		lcoords.y-=int(texture_size.y);
 	
-	float distance = length(halfTexSize-abs(lcoords))/length(texture_size/2);
+	float distance = length(halfTexSize-abs(lcoords))/(length(texture_size/2));
 	
 	float ratio = distance*distance*distance;
 	
@@ -46,14 +46,15 @@ void main(){
 	uint def_height = res >> 16;
 	uint height = (res << 16) >> 16;
 
+	float ffill = ratio*time_delta*snow_fill_rate;
+	uint fill = uint(round(ffill));
 	
-	uint fill = uint(round(ratio*time_delta*snow_fill_rate));
 		
 	uint new_def_height = def_height +fill;
 	uint new_height = height + fill;
 	
 	
-	uint deformation_height = min(new_def_height,60000);
+	uint deformation_height = min(new_def_height, 60000);
 	uint deform_point_height = min(new_height, 60000);
 	
 	uint def = deformation_height << 16;
