@@ -290,6 +290,7 @@ void render() {
 		glUseProgram(shaderProgram::deffered_program);
 		glBindVertexArray(spheres::spheresVAO);
 
+		if (config::lightVolumes){
 		glDisable(GL_DEPTH_TEST);
 		glDepthMask(false);
 		glEnable(GL_BLEND);
@@ -298,6 +299,7 @@ void render() {
 
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_FRONT);
+		}
 
 		glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE, glm::value_ptr(model_view_projection));
 		glUniform2iv(globals::screen_size_location, 1, glm::value_ptr(globals::screenResolution));
@@ -323,7 +325,7 @@ void render() {
 void setup() {
 	deffered_render::init();
 	config::defferedShading = true;
-	config::lightVolumes = true;
+	config::lightVolumes = false;
 	shaderProgram::createDefferedProgram();
 	shaderProgram::createTerrainProgram();
 	shaderProgram::createSpheresProgram();
