@@ -286,7 +286,6 @@ void render() {
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_DEPTH_TEST);
 		glViewport(0, 0, globals::screenResolution.x, globals::screenResolution.y);
 		glUseProgram(shaderProgram::deffered_program);
 		glBindVertexArray(spheres::spheresVAO);
@@ -298,17 +297,17 @@ void render() {
 		glBlendFunc(GL_ONE, GL_ONE);
 
 		glEnable(GL_CULL_FACE);
-
-		glCullFace(GL_BACK);
+		glCullFace(GL_FRONT);
 
 		glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE, glm::value_ptr(model_view_projection));
 		glUniform2iv(globals::screen_size_location, 1, glm::value_ptr(globals::screenResolution));
 		glUniform3fv(globals::light_params_location, 1, glm::value_ptr(config::lightParams));
 		glUniform3fv(globals::camera_position_location, 1, glm::value_ptr(camera::position));
+		glUniform1ui(globals::ambient_volume_index_location, spheres::instanceCount);
 
 		if (config::lightVolumes)
 		glDrawElementsInstanced(GL_TRIANGLES, spheres::indicesData.size(),
-				GL_UNSIGNED_INT, 0, spheres::instanceCount);
+				GL_UNSIGNED_INT, 0, spheres::instanceCount+1);
 		else
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 

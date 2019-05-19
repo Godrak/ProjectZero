@@ -20,6 +20,7 @@ GLint snow_fill_rate_location = 11;
 GLint veloctiy_limit_location = 12;
 GLint screen_size_location = 13;
 GLint light_params_location = 14;
+GLint ambient_volume_index_location = 15;
 }
 
 namespace config {
@@ -39,11 +40,11 @@ float snow_heightU = 2 * unitsPerMeter;
 glm::vec3 gravityU = { 0, -10 * unitsPerMeter, 0 };
 float spheresVelocitiyLimit = 20*unitsPerMeter;
 float normalOffsetU = 1/pixelResolutionU;//0.3*unitsPerMeter;
-float snowFillRateEdgeU = snow_heightU*10; // units of snow per second
+float snowFillRateEdgeU = snow_heightU; // units of snow per second
 
 glm::uvec2 deformationTextureSize = {1024,1024};
 
-glm::vec3 lightParams = {1.0, 0.007, 0.00009};//Kc, Kq, Kl
+glm::vec3 lightParams = {1.0, 0.010, 0.0006};//Kc, Kq, Kl
 
 bool geometryMode = false;
 bool defferedShading = false;
