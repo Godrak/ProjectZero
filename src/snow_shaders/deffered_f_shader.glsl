@@ -61,13 +61,13 @@ ivec2 pointToTextureUV(vec2 point, vec2 world_texture_size){
 vec3 getSnowNormal(vec2 world_pos) {
 	vec2 uv = wrap(world_pos, vec2(200,200))/200.0;
 	vec4 normal = texture(snow_normals_texture, uv);
-	return normal.xyz;
+	return normal.xzy;
 }
 
 vec3 getSnowNormal2(vec2 world_pos) {
 	vec2 uv = wrap(world_pos, vec2(50,50))/50.0;
 	vec4 normal = texture(snow_normals_texture, uv);
-	return normal.xyz;
+	return normal.xzy;
 }
 
 
@@ -155,12 +155,12 @@ vec3 getGroundNormal(vec2 world_pos){
 void main(){
 	position = world_position;
 	vec3 n = getGroundNormal(world_position.xz);
-	//vec3 dnormal = getDeformedNormal(world_position.xz, n);
+	vec3 dnormal = getDeformedNormal(world_position.xz, n);
 	
 	//vec3 snormal = normalize(getSnowNormal(world_position.xz));
-	//vec3 s2normal = normalize(getSnowNormal2(world_position.xz));
+	vec3 s2normal = normalize(getSnowNormal2(world_position.xz));
 	
-	//normal = normalize(snormal +s2normal+ dnormal);
-	normal = n;
+	normal = normalize(s2normal+ dnormal);
+	//normal = n;
 	color = diffuse_color;
 }

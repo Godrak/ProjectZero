@@ -11,6 +11,6 @@ layout (location = 2) out vec3 color;
 
 void main(){
 	position = world_position;
-	normal = vec3(0,0,0);//normalize(normalize(model_position.xzy)/2.0+vec3(1));
+	normal = vec3(0);//normalize(model_position);
 	color = diffuse_color;
 }
