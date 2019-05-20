@@ -324,8 +324,8 @@ void render() {
 
 void setup() {
 	deffered_render::init();
-	config::defferedShading = false;
-	config::lightVolumes = false;
+	config::defferedShading = true;
+	config::lightVolumes = true;
 	shaderProgram::createDefferedProgram();
 	shaderProgram::createTerrainProgram();
 	shaderProgram::createSpheresProgram();
