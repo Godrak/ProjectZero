@@ -26,7 +26,7 @@ void main(){
 	vec3 diff_color = texture(colors, uv).xyz;
 	vec3 position = texture(positions, uv).xyz;
 	
-	vec3 lightDir = light_center - position;
+	vec3 lightDir = (light_center - position);
 	float distance = length(lightDir);
 	float distance_sq = distance*distance;
 	lightDir = normalize(lightDir);
@@ -51,13 +51,13 @@ void main(){
 		attenuation = lightParams.x + lightParams.y*distance + lightParams.z*distance_sq;
     }
       
-    diffuse /= (attenuation);
-    specular /= (attenuation);
+    diffuse /= (attenuation/3);
+    specular /= (attenuation/3);
     
     vec3 colorLinear = diffuse + specular;
 	vec3 colorGammaCorrected = pow(colorLinear, vec3(1.0/screenGamma));
 	float m = max(max(colorGammaCorrected.x, colorGammaCorrected.y), colorGammaCorrected.z);
-	if (m < 0.04) {
+	if (m < 0.08) {
 		colorGammaCorrected = colorGammaCorrected*colorGammaCorrected;
 	}
 	

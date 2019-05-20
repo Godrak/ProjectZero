@@ -2,13 +2,14 @@
 
 layout(binding = 0) uniform sampler2D heightmap;
 layout(r32ui, binding = 1) uniform uimage2D deformation_texture;
+layout(binding = 6) uniform sampler2D snow_normals_texture;
 
 layout(location = 2) uniform vec2 terrain_size;
 layout(location = 3) uniform float vertical_scaling;
 layout(location = 4) uniform vec3 camera_position;
 layout(location = 8) uniform float pixel_resolution;
 layout(location = 9) uniform float snow_height;
-layout(location = 10) uniform float normal_off;
+layout(location = 10) uniform float normal_offset;
 
 in vec3	world_position;
 in vec3 diffuse_color;
@@ -57,6 +58,19 @@ ivec2 pointToTextureUV(vec2 point, vec2 world_texture_size){
 	}
 }
 
+vec3 getSnowNormal(vec2 world_pos) {
+	vec2 uv = wrap(world_pos, vec2(200,200))/200.0;
+	vec4 normal = texture(snow_normals_texture, uv);
+	return normal.xyz;
+}
+
+vec3 getSnowNormal2(vec2 world_pos) {
+	vec2 uv = wrap(world_pos, vec2(50,50))/50.0;
+	vec4 normal = texture(snow_normals_texture, uv);
+	return normal.xyz;
+}
+
+
 float computeDepressionOrElevation(float deformation_height, float deform_point_height, float total_height){
 	if (deform_point_height > total_height || 
 		total_height - deformation_height > 2*snow_height || 
@@ -71,7 +85,7 @@ float computeDepressionOrElevation(float deformation_height, float deform_point_
 	float distance_from_foot = sqrt(max(deformation_height - deform_point_height,0));
 	
 	float depression_depth = abs(total_height - deform_point_height);
-	if (depression_depth < 10) return total_height;
+	//if (depression_depth < 10) return total_height;
 	 
 	float elevation_distance = distance_from_foot - depression_distance;
 	float maximum_elevation_distance  = depression_depth*0.1;	
@@ -86,8 +100,8 @@ float computeDepressionOrElevation(float deformation_height, float deform_point_
 }
 
 float getDeformedHeight(vec2 world_pos){
-	float ground_height = getGroundHeight(world_pos);
-	float height = ground_height+snow_height;
+
+	float height = getGroundHeight(world_pos) + snow_height;
 	
 	vec2 world_texture_size = imageSize(deformation_texture)/pixel_resolution;
 	ivec2 tex_coords = pointToTextureUV(world_pos, world_texture_size);
@@ -106,31 +120,47 @@ float getDeformedHeight(vec2 world_pos){
 }
 
 
-vec2 getRandomNormalOffset(vec2 data){
-	float noise = get_noise(data.x, data.y, 1.235);
-	return vec2(normal_off+noise*3, 0);
+vec3 getDeformedNormal(vec2 world_pos, vec3 groundNormal){
+	vec2 world_texture_size = imageSize(deformation_texture)/pixel_resolution;
+	ivec2 tex_coords = pointToTextureUV(world_pos, world_texture_size);
+	if (tex_coords.x < 0){
+		return groundNormal;
+	}
+
+	vec2 off = vec2(1.0/pixel_resolution, 0.0);
+	
+	float r_height = getDeformedHeight(world_pos + off.xy);
+	float l_height = getDeformedHeight(world_pos - off.xy);
+	float u_height = getDeformedHeight(world_pos + off.yx);
+	float d_height = getDeformedHeight(world_pos - off.yx);
+	
+	vec3 normal = vec3(l_height - r_height, 2*off.x, d_height - u_height);
+
+	return normalize(normal);
 }
 
 vec3 getGroundNormal(vec2 world_pos){
-	vec2 right = world_pos+getRandomNormalOffset(world_pos);
-	vec2 left = world_pos-getRandomNormalOffset(right);
-	vec2 down = world_pos-getRandomNormalOffset(left);
-	vec2 up = world_pos+getRandomNormalOffset(down);
+	vec2 off = vec2(normal_offset, 0.0);
 	
-	float r_height = getDeformedHeight(right);
-	float l_height = getDeformedHeight(left);
-	float u_height = getDeformedHeight(up);
-	float d_height = getDeformedHeight(down);
+	float r_height = getGroundHeight(world_pos + off.xy);
+	float l_height = getGroundHeight(world_pos - off.xy);
+	float u_height = getGroundHeight(world_pos + off.yx);
+	float d_height = getGroundHeight(world_pos - off.yx);
 	
-	vec3 tangent = vec3(2*normal_off, r_height - l_height, 0.0);
-	vec3 bitangent = vec3(0.0, d_height - u_height, 2*normal_off);
-	
-	vec3 normal = normalize(-cross(tangent, bitangent));
-	return normal;
+	vec3 normal = vec3(l_height - r_height, 2*off.x, d_height - u_height);
+
+	return normalize(normal);
 }
 
 void main(){
 	position = world_position;
-	normal = getGroundNormal(world_position.xz);
+	vec3 n = getGroundNormal(world_position.xz);
+	//vec3 dnormal = getDeformedNormal(world_position.xz, n);
+	
+	//vec3 snormal = normalize(getSnowNormal(world_position.xz));
+	//vec3 s2normal = normalize(getSnowNormal2(world_position.xz));
+	
+	//normal = normalize(snormal +s2normal+ dnormal);
+	normal = n;
 	color = diffuse_color;
 }

@@ -20,21 +20,16 @@ float getGroundHeight(vec2 world_pos){
 }
 
 vec3 getGroundNormal(vec2 world_pos){
-	vec2 right = world_pos+vec2(normal_offset,0);
-	vec2 left = world_pos-vec2(normal_offset,0);
-	vec2 down = world_pos-vec2(normal_offset,0);
-	vec2 up = world_pos+vec2(normal_offset,0);
+	vec2 off = vec2(normal_offset, 0.0);
 	
-	float r_height = getGroundHeight(right);
-	float l_height = getGroundHeight(left);
-	float u_height = getGroundHeight(up);
-	float d_height = getGroundHeight(down);
+	float r_height = getGroundHeight(world_pos + off.xy);
+	float l_height = getGroundHeight(world_pos - off.xy);
+	float u_height = getGroundHeight(world_pos + off.yx);
+	float d_height = getGroundHeight(world_pos - off.yx);
 	
-	vec3 tangent = vec3(2*normal_offset, r_height - l_height, 0.0);
-	vec3 bitangent = vec3(0.0, d_height - u_height, 2*normal_offset);
-	vec3 normal = normalize(-cross(tangent, bitangent));
+	vec3 normal = vec3(l_height - r_height, 2*off.x, d_height - u_height);
 
-	return normal;
+	return normalize(normal);
 }
 
 void main(){

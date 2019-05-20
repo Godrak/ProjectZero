@@ -4,10 +4,11 @@
 #include <glm/glm.hpp>
 #include "shaders.h"
 #include "misc/heightmap2.c"
+#include "misc/snow_normal_tex.c"
 
 namespace terrain {
 GLuint terrainVAO, vertexBuffer, elementBuffer;
-GLuint heightmap_tex;
+GLuint heightmap_tex, snow_normal_tex;
 GLint vpos_location = 0;
 GLint vcol_location = 1;
 
@@ -76,6 +77,17 @@ void initHeightmapTex() {
 			GL_RGB, GL_UNSIGNED_BYTE, gimp_image.pixel_data);
 }
 
+void initSnowNormalTex() {
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, snow_normals_texture.width, snow_normals_texture.height,
+			0,
+			GL_RGB, GL_UNSIGNED_BYTE, snow_normals_texture.pixel_data);
+}
+
 void init() {
 	glGenVertexArrays(1, &terrainVAO);
 	glBindVertexArray(terrainVAO);
@@ -89,14 +101,17 @@ void init() {
 	glActiveTexture(GL_TEXTURE0);
 	glGenTextures(1, &heightmap_tex);
 	glBindTexture(GL_TEXTURE_2D, heightmap_tex);
-
+	initHeightmapTex();
 	checkGl();
 
-	initHeightmapTex();
-
+	glActiveTexture(GL_TEXTURE6);
+	glGenTextures(1, &snow_normal_tex);
+	glBindTexture(GL_TEXTURE_2D, snow_normal_tex);
+	initSnowNormalTex();
 	checkGl();
 
 	prepareData();
+	checkGl();
 
 	glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(vertex),
 			vertexData.data(), GL_STATIC_DRAW);

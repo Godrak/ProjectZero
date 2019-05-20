@@ -66,7 +66,7 @@ float computeDepressionOrElevation(float deformation_height, float deform_point_
 	float distance_from_foot = sqrt(max(deformation_height - deform_point_height,0));
 	
 	float depression_depth = abs(total_height - deform_point_height);
-	if (depression_depth < 10) return total_height;
+//	if (depression_depth < 10) return total_height;
 	 
 	float elevation_distance = distance_from_foot - depression_distance;
 	float maximum_elevation_distance  = depression_depth*0.1;	
@@ -80,9 +80,7 @@ float computeDepressionOrElevation(float deformation_height, float deform_point_
 	return total_height + elevation;
 }
 
-float getDeformedHeight(vec2 world_pos){
-	float ground_height = getGroundHeight(world_pos);
-	float height = ground_height+snow_height;
+float getDeformedHeight(vec2 world_pos, float height){
 	
 	vec2 world_texture_size = imageSize(deformation_texture)/pixel_resolution;
 	ivec2 tex_coords = pointToTextureUV(world_pos, world_texture_size);
@@ -104,7 +102,8 @@ void main(){
  	vec3 world_pos = interpolate3D(position_es[0], position_es[1], position_es[2]);
  	diffuse_color = vec3(1,1,0) ;//interpolate3D(color_es[0], color_es[1], color_es[2]);
  	
- 	float height = getDeformedHeight(world_pos.xz);
+ 	float height = getGroundHeight(world_pos.xz)+snow_height;
+ 	height = getDeformedHeight(world_pos.xz, height);
  	
 	vec3 pos = vec3(world_pos.x, height ,world_pos.z);
 	world_position = pos;

@@ -26,7 +26,7 @@ GLint ambient_volume_index_location = 15;
 namespace config {
 const int unitsPerMeter = 30;
 const float verticesPerMeter = unitsPerMeter * 0.01; //0.3
-const glm::vec2 terrainSizeM = { 600, 600 };
+const glm::vec2 terrainSizeM = { 500, 500 };
 const glm::vec2 terrainSizeU = { terrainSizeM.x * unitsPerMeter, terrainSizeM.y
 		* unitsPerMeter };
 const int terrainVerticesX = terrainSizeM.x * verticesPerMeter;
@@ -34,17 +34,17 @@ const int terrainVerticesZ = terrainSizeM.y * verticesPerMeter;
 const float sphereMinHeightU = 1 * unitsPerMeter;
 const float sphereMaxHeightU = 3 * unitsPerMeter;
 const int initSpheresAltitudeU = 100 * unitsPerMeter;
-float verticalScaleU = 40 * unitsPerMeter;
-float pixelResolutionU = 2.0/unitsPerMeter; //deformation texture - pixels per unit, 0.05
+float verticalScaleU = 30 * unitsPerMeter;
+float pixelResolutionU = 3.5/unitsPerMeter; //deformation texture - pixels per unit, 0.05
 float snow_heightU = 2 * unitsPerMeter;
 glm::vec3 gravityU = { 0, -10 * unitsPerMeter, 0 };
 float spheresVelocitiyLimit = 20*unitsPerMeter;
-float normalOffsetU = 1/pixelResolutionU;//0.3*unitsPerMeter;
-float snowFillRateEdgeU = snow_heightU; // units of snow per second
+float normalOffsetU = terrainSizeM.x*unitsPerMeter/1000.0;
+float snowFillRateEdgeU = snow_heightU*5; // units of snow per second
 
 glm::uvec2 deformationTextureSize = {1024,1024};
 
-glm::vec3 lightParams = {1.0, 0.010, 0.0006};//Kc, Kq, Kl
+glm::vec3 lightParams = {1.0, 0.015, 0.0009};//Kc, Kq, Kl
 
 bool geometryMode = false;
 bool defferedShading = false;

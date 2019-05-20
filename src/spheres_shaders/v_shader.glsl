@@ -26,9 +26,9 @@ out vec3 world_position;
 void main(){
 	InstanceData data = instanceData[gl_InstanceID];
 	diffuse_color = vec3(data.color_x,data.color_y, data.color_z);
-	model_position = vertex_position; 
+	model_position = vertex_position.xzy; 
 	
-	vec3 pos = vertex_position*instanceData[gl_InstanceID].size_x;
+	vec3 pos = model_position*instanceData[gl_InstanceID].size_x;
 	pos += vec3(data.pos_x, data.pos_y, data.pos_z);
 	world_position = pos;
 	

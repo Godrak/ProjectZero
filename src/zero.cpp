@@ -290,15 +290,15 @@ void render() {
 		glUseProgram(shaderProgram::deffered_program);
 		glBindVertexArray(spheres::spheresVAO);
 
-		if (config::lightVolumes){
-		glDisable(GL_DEPTH_TEST);
-		glDepthMask(false);
-		glEnable(GL_BLEND);
-		glBlendEquation(GL_FUNC_ADD);
-		glBlendFunc(GL_ONE, GL_ONE);
+		if (config::lightVolumes) {
+			glDisable(GL_DEPTH_TEST);
+			glDepthMask(false);
+			glEnable(GL_BLEND);
+			glBlendEquation(GL_FUNC_ADD);
+			glBlendFunc(GL_ONE, GL_ONE);
 
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_FRONT);
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_FRONT);
 		}
 
 		glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE, glm::value_ptr(model_view_projection));
@@ -308,8 +308,8 @@ void render() {
 		glUniform1ui(globals::ambient_volume_index_location, spheres::instanceCount);
 
 		if (config::lightVolumes)
-		glDrawElementsInstanced(GL_TRIANGLES, spheres::indicesData.size(),
-				GL_UNSIGNED_INT, 0, spheres::instanceCount+1);
+			glDrawElementsInstanced(GL_TRIANGLES, spheres::indicesData.size(),
+			GL_UNSIGNED_INT, 0, spheres::instanceCount + 1);
 		else
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 
@@ -325,7 +325,7 @@ void render() {
 void setup() {
 	deffered_render::init();
 	config::defferedShading = true;
-	config::lightVolumes = false;
+	config::lightVolumes = true;
 	shaderProgram::createDefferedProgram();
 	shaderProgram::createTerrainProgram();
 	shaderProgram::createSpheresProgram();
