@@ -8,7 +8,7 @@ layout(location = 15) uniform uint ambientIndex;
 
 struct InstanceData
 {
-	float size_x; float size_y; float size_y;
+	float size_x; float size_y; float size_z;
 	float color_x; float color_y; float color_z;
 	float pos_x; float pos_y; float pos_z;
 	float speed_x; float speed_y; float speed_z;

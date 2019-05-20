@@ -157,10 +157,10 @@ void main(){
 	vec3 n = getGroundNormal(world_position.xz);
 	vec3 dnormal = getDeformedNormal(world_position.xz, n);
 	
-	//vec3 snormal = normalize(getSnowNormal(world_position.xz));
+	vec3 snormal = normalize(getSnowNormal(world_position.xz));
 	vec3 s2normal = normalize(getSnowNormal2(world_position.xz));
 	
-	normal = normalize(s2normal+ dnormal);
+	normal = normalize(s2normal + snormal + dnormal);
 	//normal = n;
 	color = diffuse_color;
 }

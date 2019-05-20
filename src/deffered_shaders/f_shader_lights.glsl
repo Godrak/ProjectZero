@@ -28,6 +28,7 @@ void main(){
 	
 	vec3 lightDir = (light_center - position);
 	float distance = length(lightDir);
+	
 	float distance_sq = distance*distance;
 	lightDir = normalize(lightDir);
 	
