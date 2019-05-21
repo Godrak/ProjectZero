@@ -27,7 +27,9 @@ vec3 getGroundNormal(vec2 world_pos){
 	float u_height = getGroundHeight(world_pos + off.yx);
 	float d_height = getGroundHeight(world_pos - off.yx);
 	
-	vec3 normal = vec3(l_height - r_height, 2*off.x, d_height - u_height);
+	vec3 tangent = vec3(2*off.x, r_height - l_height, 0.0);
+	vec3 bitangent = vec3(0.0, u_height - d_height, 2*off.x);
+	vec3 normal = cross(bitangent, tangent);
 
 	return normalize(normal);
 }

@@ -30,7 +30,7 @@ void init() {
 	glActiveTexture(GL_TEXTURE3);
 	glGenTextures(1, &gNormal);
 	glBindTexture(GL_TEXTURE_2D, gNormal);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, globals::screenResolution.x,
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, globals::screenResolution.x,
 			globals::screenResolution.y, 0, GL_RGB, GL_FLOAT, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

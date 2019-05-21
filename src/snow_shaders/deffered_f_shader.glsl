@@ -48,7 +48,7 @@ vec2 wrap (vec2 world_pos, vec2 texture_size){
 
 ivec2 pointToTextureUV(vec2 point, vec2 world_texture_size){
 	vec2 camera_delta = point - camera_position.xz;
-	
+
 	if (insideBox(camera_delta, -world_texture_size/2 + 1, world_texture_size/2 -1)==1){
 		vec2 point = wrap(point, world_texture_size);
 		ivec2 tex_coords = ivec2(floor( point*pixel_resolution ));
@@ -60,14 +60,14 @@ ivec2 pointToTextureUV(vec2 point, vec2 world_texture_size){
 
 vec3 getSnowNormal(vec2 world_pos) {
 	vec2 uv = wrap(world_pos, vec2(200,200))/200.0;
-	vec4 normal = texture(snow_normals_texture, uv);
-	return normal.xzy;
+	vec3 normal = vec3(texture(snow_normals_texture, uv));
+	return normal.xzy-1;
 }
 
 vec3 getSnowNormal2(vec2 world_pos) {
 	vec2 uv = wrap(world_pos, vec2(50,50))/50.0;
 	vec4 normal = texture(snow_normals_texture, uv);
-	return normal.xzy;
+	return normal.zxy;
 }
 
 
@@ -134,7 +134,9 @@ vec3 getDeformedNormal(vec2 world_pos, vec3 groundNormal){
 	float u_height = getDeformedHeight(world_pos + off.yx);
 	float d_height = getDeformedHeight(world_pos - off.yx);
 	
-	vec3 normal = vec3(l_height - r_height, 2*off.x, d_height - u_height);
+	vec3 tangent = vec3(2*off.x, r_height - l_height, 0.0);
+	vec3 bitangent = vec3(0.0, u_height - d_height, 2*off.x);
+	vec3 normal = cross(bitangent, tangent);
 
 	return normalize(normal);
 }
@@ -147,7 +149,9 @@ vec3 getGroundNormal(vec2 world_pos){
 	float u_height = getGroundHeight(world_pos + off.yx);
 	float d_height = getGroundHeight(world_pos - off.yx);
 	
-	vec3 normal = vec3(l_height - r_height, 2*off.x, d_height - u_height);
+	vec3 tangent = vec3(2*off.x, r_height - l_height, 0.0);
+	vec3 bitangent = vec3(0.0, u_height - d_height, 2*off.x);
+	vec3 normal = cross(bitangent, tangent);
 
 	return normalize(normal);
 }
@@ -160,7 +164,7 @@ void main(){
 	vec3 snormal = normalize(getSnowNormal(world_position.xz));
 	vec3 s2normal = normalize(getSnowNormal2(world_position.xz));
 	
-	normal = normalize(s2normal + snormal + dnormal);
-	//normal = n;
+	//normal = normalize(s2normal + snormal + dnormal);
+	normal = dnormal;
 	color = diffuse_color;
 }
