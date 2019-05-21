@@ -40,11 +40,11 @@ float snow_heightU = 2 * unitsPerMeter;
 glm::vec3 gravityU = { 0, -10 * unitsPerMeter, 0 };
 float spheresVelocitiyLimit = 20*unitsPerMeter;
 float normalOffsetU = terrainSizeM.x*unitsPerMeter/1000.0;
-float snowFillRateEdgeU = snow_heightU*5; // units of snow per second
+float snowFillRateEdgeU = snow_heightU*3; // units of snow per second
 
 glm::uvec2 deformationTextureSize = {1024,1024};
 
-glm::vec3 lightParams = {1.0, 0.015, 0.0009};//Kc, Kq, Kl
+glm::vec3 lightParams = {1.0, 0.02, 0.001};//Kc, Kq, Kl
 
 bool geometryMode = false;
 bool defferedShading = false;

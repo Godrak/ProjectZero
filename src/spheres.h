@@ -37,7 +37,7 @@ std::vector<sphereInfo> spheres;
 
 const unsigned int rings = 10;
 const unsigned int sectors = 10;
-const unsigned int instanceCount = 150;
+const unsigned int instanceCount = 100;
 
 GLuint spheresVAO, vertexBuffer, elementBuffer, instancingBuffer;
 GLuint deformationTexture;
