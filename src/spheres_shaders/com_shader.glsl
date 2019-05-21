@@ -45,7 +45,7 @@ float getGroundHeight(float world_x, float world_z){
 	float s = world_x / terrain_size.x;
 	float t = world_z / terrain_size.y;
 	vec4 height = texture(heightmap, vec2(s,t));
-	return height*vertical_scaling;
+	return height.x*vertical_scaling;
 }
 
 //gl_GlobalInvocationID - x component defines the sphere we are computing
