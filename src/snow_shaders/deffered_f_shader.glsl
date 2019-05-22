@@ -58,23 +58,16 @@ ivec2 pointToTextureUV(vec2 point, vec2 world_texture_size){
 	}
 }
 
-vec3 getSnowNormal(vec2 world_pos) {
-	vec2 uv = wrap(world_pos, vec2(200,200))/200.0;
+vec3 getSnowNormal(vec2 world_pos, float size) {
+	vec2 uv = wrap(world_pos, vec2(size,size))/size;
 	vec3 normal = vec3(texture(snow_normals_texture, uv));
 	return normal.xzy-0.5;
 }
 
-vec3 getSnowNormal2(vec2 world_pos) {
-	vec2 uv = wrap(world_pos, vec2(50,50))/50.0;
-	vec4 normal = texture(snow_normals_texture, uv);
-	return normal.xzy-0.5;
-}
-
-
 float computeDepressionOrElevation(float deformation_height, float deform_point_height, float total_height){
 	if (deform_point_height > total_height || 
-		total_height - deformation_height > 2*snow_height || 
-		total_height - deform_point_height > 2*snow_height ||
+		total_height - deformation_height > 3*snow_height || 
+		total_height - deform_point_height > 3*snow_height ||
 		total_height - deform_point_height <= 0)
 		return total_height;
 	
@@ -85,19 +78,19 @@ float computeDepressionOrElevation(float deformation_height, float deform_point_
 	float distance_from_foot = sqrt(max(deformation_height - deform_point_height,0));
 	
 	float depression_depth = abs(total_height - deform_point_height);
-	//if (depression_depth < 10) return total_height;
 	 
 	float elevation_distance = distance_from_foot - depression_distance;
-	float maximum_elevation_distance  = depression_depth*0.1;	
+	float maximum_elevation_distance  = snow_height*0.1;	
 	float ratio = abs(elevation_distance / maximum_elevation_distance);
 	
-	float height = maximum_elevation_distance*5;
+	float height = maximum_elevation_distance*5.0;
 	float ratio6 = ratio*ratio*ratio*ratio*ratio*ratio;
 	float t = 2*sqrt((ratio)/(1+10*ratio6)) / (1+10*ratio*ratio);
 	
 	float elevation = t*height;
 	return total_height + elevation;
 }
+
 
 float getDeformedHeight(vec2 world_pos){
 
@@ -161,10 +154,15 @@ void main(){
 	vec3 n = getGroundNormal(world_position.xz);
 	vec3 dnormal = getDeformedNormal(world_position.xz, n);
 	
-	vec3 snormal = normalize(getSnowNormal(world_position.xz));
-	vec3 s2normal = normalize(getSnowNormal2(world_position.xz));
+	vec3 snormal = normalize(getSnowNormal(world_position.xz, 5));
+	vec3 s2normal = normalize(getSnowNormal(world_position.xz, 20));
 	
-	normal = normalize(s2normal/5 + snormal/3 + dnormal);
+	vec3 noise = normalize(vec3(get_noise(world_position.x, world_position.y, world_position.z), 
+						   get_noise(world_position.z, world_position.y, world_position.x),
+						   get_noise(world_position.y, world_position.x, world_position.y)));
+	
+	
+	normal = normalize(snormal/6 + s2normal/3 + dnormal);
 	//normal = snormal;
 	color = diffuse_color;
 }

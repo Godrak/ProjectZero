@@ -24,8 +24,8 @@ GLint ambient_volume_index_location = 15;
 }
 
 namespace config {
-const int unitsPerMeter = 30;
-const float verticesPerMeter = unitsPerMeter * 0.01; //0.3
+const int unitsPerMeter = 100;
+const float verticesPerMeter = unitsPerMeter * 0.003; //0.3
 const glm::vec2 terrainSizeM = { 500, 500 };
 const glm::vec2 terrainSizeU = { terrainSizeM.x * unitsPerMeter, terrainSizeM.y
 		* unitsPerMeter };
@@ -44,7 +44,7 @@ float snowFillRateEdgeU = snow_heightU*3; // units of snow per second
 
 glm::uvec2 deformationTextureSize = {1024,1024};
 
-glm::vec3 lightParams = {1.0, 0.02, 0.001};//Kc, Kq, Kl
+glm::vec3 lightParams = {1.0, 0.002, 0.00006};//Kc, Kq, Kl
 
 bool geometryMode = false;
 bool defferedShading = false;

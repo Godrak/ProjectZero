@@ -21,7 +21,7 @@ void applyViewTransform(glm::mat4x4 &m) {
 
 void applyProjectionTransform(glm::mat4x4 &m) {
 	glm::mat4x4 perspective = glm::perspective<float>(glm::radians(35.0f),
-			(float) globals::screenResolution.x / (float) globals::screenResolution.y, 100.0f, 15000.0f);
+			(float) globals::screenResolution.x / (float) globals::screenResolution.y, 100.0f, 30000.0f);
 	m = perspective * m;
 }
 

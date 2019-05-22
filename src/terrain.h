@@ -43,8 +43,8 @@ void prepareData() {
 			vertexData.push_back(
 					{ { x * config::terrainSizeU.x / config::terrainVerticesX,
 							0, z * config::terrainSizeU.y
-									/ config::terrainVerticesZ }, { 1.0, 0.0,
-							0.6 } });
+									/ config::terrainVerticesZ },
+				{ 0.4, 0.8, 1.0 } });
 		}
 	}
 	int offset = 0; //note: if i indices buffer already contains stuff for other objects
