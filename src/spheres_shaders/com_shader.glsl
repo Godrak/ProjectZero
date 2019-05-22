@@ -15,7 +15,7 @@ layout(location = 12) uniform float velocity_limit;
 
 struct InstanceData
 {
-	float size_x; float size_y; float size_y;
+	float size_x; float size_y; float size_z;
 	float color_x; float color_y; float color_z;
 	float pos_x; float pos_y; float pos_z;
 	float speed_x; float speed_y; float speed_z;
@@ -104,7 +104,7 @@ vec2 wrap (vec2 world_pos, vec2 texture_size){
 ivec2 pointToTextureUV(vec2 point, vec2 world_texture_size){
 	vec2 camera_delta = point - camera_position.xz;
 	
-	if (insideBox(camera_delta, -world_texture_size/2, world_texture_size/2)==1){
+	if (insideBox(camera_delta, -world_texture_size/2, world_texture_size/2) > 0.5){
 		vec2 point = wrap(point, world_texture_size);
 		ivec2 tex_coords = ivec2(floor( point*pixel_resolution ));
 		return tex_coords;

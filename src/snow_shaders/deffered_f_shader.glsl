@@ -49,7 +49,7 @@ vec2 wrap (vec2 world_pos, vec2 texture_size){
 ivec2 pointToTextureUV(vec2 point, vec2 world_texture_size){
 	vec2 camera_delta = point - camera_position.xz;
 
-	if (insideBox(camera_delta, -world_texture_size/2 + 1, world_texture_size/2 -1)==1){
+	if (insideBox(camera_delta, -world_texture_size/2 + 1, world_texture_size/2 -1) > 0.5){
 		vec2 point = wrap(point, world_texture_size);
 		ivec2 tex_coords = ivec2(floor( point*pixel_resolution ));
 		return tex_coords;
