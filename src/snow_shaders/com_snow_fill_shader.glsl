@@ -40,6 +40,8 @@ void main(){
 	
 	float distance = length(halfTexSize-abs(lcoords))/(length(texture_size/2));
 	
+	float ratio = pow(distance,6);
+	
 	uint res = uint(imageLoad(deformation_texture,coords));
 	uint def_height = res >> 16;
 	uint height = (res << 16) >> 16;

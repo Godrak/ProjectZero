@@ -154,8 +154,8 @@ void main(){
 	vec3 n = getGroundNormal(world_position.xz);
 	vec3 dnormal = getDeformedNormal(world_position.xz, n);
 	
-	vec3 snormal = normalize(getSnowNormal(world_position.xz, 5));
-	vec3 s2normal = normalize(getSnowNormal(world_position.xz, 20));
+	vec3 snormal = normalize(getSnowNormal(world_position.xz, 20));
+	vec3 s2normal = normalize(getSnowNormal(world_position.xz, 100));
 	
 	vec3 noise = normalize(vec3(get_noise(world_position.x, world_position.y, world_position.z), 
 						   get_noise(world_position.z, world_position.y, world_position.x),
