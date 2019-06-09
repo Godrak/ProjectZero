@@ -33,7 +33,7 @@ void main(){
 		light_color = vec3(1,1,1);
 		light_center = cameraPosition;
 		light_size = 1000;
-		radius = 15000;
+		radius = 1000;
 		ambientFlag = 1;
 	} else {
 		InstanceData data = instanceData[gl_InstanceID];

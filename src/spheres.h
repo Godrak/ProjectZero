@@ -37,7 +37,7 @@ std::vector<sphereInfo> spheres;
 
 const unsigned int rings = 10;
 const unsigned int sectors = 10;
-const unsigned int instanceCount = 100;
+const unsigned int instanceCount = 160;
 
 GLuint spheresVAO, vertexBuffer, elementBuffer, instancingBuffer;
 GLuint deformationTexture;
@@ -87,7 +87,7 @@ void prepareData() {
 				config::initSpheresAltitudeU, config::terrainSizeU.y
 						* (rand() / float(RAND_MAX)) };
 		spheres.push_back(
-				sphereInfo { size, color, pos, 200 / (size.x * size.x) });
+				sphereInfo { size, color, pos, 60 / (size.x * size.x) });
 	}
 }
 

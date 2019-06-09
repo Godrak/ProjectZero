@@ -41,7 +41,7 @@ void main(){
     vec3 halfwayDir = normalize(lightDir + viewDir);  
     float spec = pow(max(dot(normal, halfwayDir), 0.0), 16.0);
     if (normal == vec3(0,0,0) && ambientFlag == 0)
-    	spec = 1;
+    	spec = 0.9;
    	vec3 specular = light_color * spec;
     
     // attenuation

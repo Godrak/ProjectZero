@@ -119,7 +119,7 @@ void deformSnow(){
 	vec2 world_texture_size = imageSize(deformation_texture)/pixel_resolution;
 	vec2 deform_point_loc = world_pos.xz;
 	
-	float mc = 600; // half the side of area of units covered
+	float mc = 150; // half the side of area of units covered
 	for (int x = -int(round(mc*pixel_resolution)); x < mc*pixel_resolution; x++){ // units * pixel_res (per unit) = pixels
 	for (int y = -int(round(mc*pixel_resolution)); y < mc*pixel_resolution; y++){
 		vec2 point_delta = vec2(x,y)/pixel_resolution;

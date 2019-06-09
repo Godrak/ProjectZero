@@ -15,7 +15,10 @@
 #include "terrain.h"
 #include "spheres.h"
 #include "snow.h"
+#include "skybox.h"
 #include "deffered_render.h"
+
+//#define DEBUG
 
 namespace fps {
 static double fpsOrigin = 0.0;
@@ -116,15 +119,15 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 	if (action == GLFW_RELEASE) {
 		switch (key) {
 		case GLFW_KEY_W:
-		case GLFW_KEY_S:
+			case GLFW_KEY_S:
 			forth_back = ' ';
 			break;
 		case GLFW_KEY_A:
-		case GLFW_KEY_D:
+			case GLFW_KEY_D:
 			left_right = ' ';
 			break;
 		case GLFW_KEY_Q:
-		case GLFW_KEY_E:
+			case GLFW_KEY_E:
 			up_down = ' ';
 			break;
 		}
@@ -206,7 +209,12 @@ void render() {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
+
 	//DEFORMATION AND PHYSICS COMPUTE SHADER DISPATCH
+#ifdef DEBUG
+	checkGl();
+	std::cout << "deformation and physics" << std::endl;
+#endif
 	glUseProgram(shaderProgram::spheres_compute_program);
 	glBindVertexArray(spheres::spheresVAO);
 
@@ -224,7 +232,10 @@ void render() {
 	glBindVertexArray(0);
 
 	//SNOW FILL DISPATCH
-
+#ifdef DEBUG
+	checkGl();
+	std::cout << "snow fill" << std::endl;
+#endif
 	glUseProgram(shaderProgram::snow_fill_program);
 	glUniform1f(globals::snow_fill_rate_location, config::snowFillRateEdgeU);
 	glUniform1f(globals::time_delta_location, delta);
@@ -236,6 +247,10 @@ void render() {
 	glUseProgram(0);
 
 	//TERRAIN DRAW
+#ifdef DEBUG
+	checkGl();
+	std::cout << "terrain draw" << std::endl;
+#endif
 	glUseProgram(shaderProgram::terrain_program);
 	glBindVertexArray(terrain::terrainVAO);
 
@@ -252,6 +267,10 @@ void render() {
 	glBindVertexArray(0);
 
 	//SNOW DRAW
+#ifdef DEBUG
+	checkGl();
+	std::cout << "snow draw" << std::endl;
+#endif
 	glUseProgram(shaderProgram::snow_program);
 	glBindVertexArray(snow::snowVAO);
 
@@ -270,6 +289,10 @@ void render() {
 	glBindVertexArray(0);
 
 	//SPHERES DRAW
+#ifdef DEBUG
+	checkGl();
+	std::cout << "spheres draw" << std::endl;
+#endif
 	glUseProgram(shaderProgram::spheres_program);
 	glBindVertexArray(spheres::spheresVAO);
 
@@ -283,7 +306,11 @@ void render() {
 
 // DEFFERED SHADING STEP
 	if (config::defferedShading) {
-
+#ifdef DEBUG
+	checkGl();
+	std::cout << "deffered shading step" << std::endl;
+#endif
+		//LIGHTS DRAW
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glViewport(0, 0, globals::screenResolution.x, globals::screenResolution.y);
@@ -313,9 +340,36 @@ void render() {
 		else
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 
+		if (config::lightVolumes) {
+			glDisable(GL_BLEND);
+			glDisable(GL_CULL_FACE);
+		}
+
+		glUseProgram(0);
+		glBindVertexArray(0);
+
+		//SKYBOX DRAW
+
+		glUseProgram(shaderProgram::skybox_program);
+		glBindVertexArray(skybox::skyboxVAO);
+
+		glDisable(GL_DEPTH_TEST);
+		glDepthMask(false);
+
+		glUniformMatrix4fv(globals::mvp_location, 1, GL_FALSE, glm::value_ptr(model_view_projection));
+		glUniform3fv(globals::camera_position_location, 1, glm::value_ptr(camera::position));
+		glUniform2iv(globals::screen_size_location, 1, glm::value_ptr(globals::screenResolution));
+
+		glDrawElements(GL_TRIANGLES, skybox::indicesData.size(), GL_UNSIGNED_INT, 0);
+
+		glEnable(GL_DEPTH_TEST);
+		glDepthMask(true);
+
+		glUseProgram(0);
+		glBindVertexArray(0);
 	}
 
-	//SWAP BUFFERS
+//SWAP BUFFERS
 	glfwSwapBuffers(glfwContext::window);
 	glfwPollEvents();
 	switchConfiguration();
@@ -330,9 +384,11 @@ void setup() {
 	shaderProgram::createTerrainProgram();
 	shaderProgram::createSpheresProgram();
 	shaderProgram::createSnowProgram(); //MUST BE AFTER TERRAIN
+	shaderProgram::createSkyboxProgram();
 	terrain::init();
 	spheres::init();
 	snow::init(); //MUST BE AFTER TERRAIN AND SPHERES
+	skybox::init();
 	checkGl();
 }
 

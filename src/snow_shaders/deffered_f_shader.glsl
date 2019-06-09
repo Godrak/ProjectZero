@@ -157,9 +157,9 @@ void main(){
 	vec3 snormal = normalize(getSnowNormal(world_position.xz, 20));
 	vec3 s2normal = normalize(getSnowNormal(world_position.xz, 100));
 	
-	vec3 noise = normalize(vec3(get_noise(world_position.x, world_position.y, world_position.z), 
-						   get_noise(world_position.z, world_position.y, world_position.x),
-						   get_noise(world_position.y, world_position.x, world_position.y)));
+	//vec3 noise = normalize(vec3(get_noise(world_position.x, world_position.y, world_position.z), 
+	//					   get_noise(world_position.z, world_position.y, world_position.x),
+	//					   get_noise(world_position.y, world_position.x, world_position.y)));
 	
 	
 	normal = normalize(snormal/6 + s2normal/3 + dnormal);

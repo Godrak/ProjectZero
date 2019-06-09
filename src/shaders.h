@@ -16,6 +16,8 @@ GLuint snow_tes_shader, snow_f_shader, snow_fill_shader, snow_program, snow_fill
 
 GLuint deffered_v_shader, deffered_f_shader, deffered_program;
 
+GLuint skybox_v_shader, skybox_f_shader, skybox_program;
+
 std::string getFragmentShaderPath(std::string group) {
 	if (config::defferedShading)
 		return group + "/deffered_f_shader.glsl";
@@ -162,6 +164,21 @@ void createSpheresProgram() {
 		exit(-1);
 
 }
+
+void createSkyboxProgram() {
+	loadAndCompileShader("skybox_shaders/v_shader.glsl", skybox_v_shader,
+	GL_VERTEX_SHADER);
+	loadAndCompileShader("skybox_shaders/f_shader.glsl", skybox_f_shader,
+	GL_FRAGMENT_SHADER);
+
+	skybox_program = glCreateProgram();
+	glAttachShader(skybox_program, skybox_v_shader);
+	glAttachShader(skybox_program, skybox_f_shader);
+	glLinkProgram(skybox_program);
+	if (!check_program(skybox_program, GL_LINK_STATUS))
+		exit(-1);
+}
+
 }
 
 #endif /* SHADERS_H_ */
