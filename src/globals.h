@@ -45,11 +45,10 @@ float normalOffsetU = terrainSizeM.x*unitsPerMeter/1000.0;
 float snowFillRateEdgeU = snow_heightU*3; // units of snow per second
 float snow_height_displacement_size = 1.0*unitsPerMeter;
 float snow_texture_size = 10*unitsPerMeter;
-
 glm::uvec2 deformationTextureSize = {1024,1024};
-
 glm::vec3 lightParams = {1.0, 0.01, 0.0003};//Kc, Kq, Kl
 
+bool updateCameraPosition = true;
 bool geometryMode = false;
 bool defferedShading = false;
 bool lightVolumes = false;

@@ -35,8 +35,8 @@ std::vector<vertex> vertexData;
 std::vector<uint> indicesData;
 std::vector<sphereInfo> spheres;
 
-const unsigned int rings = 10;
-const unsigned int sectors = 10;
+const unsigned int rings = 15;
+const unsigned int sectors = 15;
 const unsigned int instanceCount = 160;
 
 GLuint spheresVAO, vertexBuffer, elementBuffer, instancingBuffer;
