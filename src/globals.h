@@ -5,7 +5,7 @@
 
 namespace globals {
 
-glm::ivec2 screenResolution = {1600,900};
+glm::ivec2 screenResolution = {1600,830};
 
 GLint mvp_location = 0;
 GLint terrain_size_location = 2;

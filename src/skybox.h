@@ -67,6 +67,12 @@ void prepareData() {
 	};
 }
 
+void addSkyPixel(int x, int y, std::vector<unsigned char>& result) {
+	result.push_back(sky_image.pixel_data[y * sky_image.width * sky_image.bytes_per_pixel + x * sky_image.bytes_per_pixel]);
+	result.push_back(sky_image.pixel_data[y * sky_image.width * sky_image.bytes_per_pixel + x * sky_image.bytes_per_pixel + 1]);
+	result.push_back(sky_image.pixel_data[y * sky_image.width * sky_image.bytes_per_pixel + x * sky_image.bytes_per_pixel + 2]);
+}
+
 std::vector<unsigned char> getSkyboxData(GLuint direction, int& width) {
 	auto recWidth = sky_image.width / 4;
 
@@ -75,12 +81,13 @@ std::vector<unsigned char> getSkyboxData(GLuint direction, int& width) {
 
 	width = recWidth;
 	glm::ivec2 recStart;
+
 	switch (direction) {
 	case GL_TEXTURE_CUBE_MAP_POSITIVE_X: //right
-		recStart = {1,0};
+		recStart = {1,2};
 		break;
 		case GL_TEXTURE_CUBE_MAP_NEGATIVE_X: //	Left
-		recStart = {1,2};
+		recStart = {1,0};
 		break;
 		case GL_TEXTURE_CUBE_MAP_POSITIVE_Y:	//Top
 		recStart = {1,1};
@@ -89,10 +96,10 @@ std::vector<unsigned char> getSkyboxData(GLuint direction, int& width) {
 		recStart= {3,1};
 		break;
 		case GL_TEXTURE_CUBE_MAP_POSITIVE_Z:	//Back
-		recStart = {2,1};
+		recStart = {0,1};
 		break;
 		case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z:	//Front
-		recStart = {0,1};
+		recStart = {2,1};
 		break;
 		default:
 		std::cout << "ERROR: invalid skybox direction" << std::endl;
@@ -100,18 +107,68 @@ std::vector<unsigned char> getSkyboxData(GLuint direction, int& width) {
 	}
 
 	recStart *= recWidth;
-
 	std::vector<unsigned char> result;
-	for (size_t y = recStart.y; y < recStart.y + recWidth; ++y) {
-		for (size_t x = recStart.x; x < recStart.x + recWidth; ++x) {
-			result.push_back(sky_image.pixel_data[y * sky_image.width * sky_image.bytes_per_pixel + x * sky_image.bytes_per_pixel]);
-			result.push_back(sky_image.pixel_data[y * sky_image.width * sky_image.bytes_per_pixel + x * sky_image.bytes_per_pixel + 1]);
-			result.push_back(sky_image.pixel_data[y * sky_image.width * sky_image.bytes_per_pixel + x * sky_image.bytes_per_pixel + 2]);
+
+	switch (direction) {
+	case GL_TEXTURE_CUBE_MAP_POSITIVE_X: //right
+		std::cout << "A" << std::endl;
+		for (int y = recStart.y; y < recStart.y + recWidth; ++y) {
+			for (int x = recStart.x; x < recStart.x + recWidth; ++x) {
+				addSkyPixel(x, y, result);
+			}
 		}
+		break;
+	case GL_TEXTURE_CUBE_MAP_NEGATIVE_X: //	Left
+		std::cout << "B" << std::endl;
+		for (int y = recStart.y + recWidth - 1; y >= recStart.y; --y) {
+			for (int x = recStart.x + recWidth - 1; x >= recStart.x; --x) {
+				addSkyPixel(x, y, result);
+			}
+		}
+		break;
+	case GL_TEXTURE_CUBE_MAP_POSITIVE_Y:	//Top
+		std::cout << "C" << std::endl;
+		for (int x = recStart.x + recWidth - 1; x >= recStart.x; --x) {
+			for (int y = recStart.y; y < recStart.y + recWidth; ++y) {
+				addSkyPixel(x, y, result);
+			}
+		}
+		break;
+	case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y:	//Bottom
+		std::cout << "D" << std::endl;
+		for (int x = recStart.x + recWidth - 1; x >= recStart.x; --x) {
+					for (int y = recStart.y; y < recStart.y + recWidth; ++y) {
+				addSkyPixel(x, y, result);
+			}
+		}
+		for (int x = recStart.x; x < recStart.x + recWidth; ++x) {
+			for (int y = recStart.y; y < recStart.y + recWidth; ++y) {
+				addSkyPixel(x, y, result);
+			}
+		}
+		break;
+	case GL_TEXTURE_CUBE_MAP_POSITIVE_Z:	//Back
+		std::cout << "E" << std::endl;
+		for (int x = recStart.x + recWidth - 1; x >= recStart.x; --x) {
+			for (int y = recStart.y; y < recStart.y + recWidth; ++y) {
+				addSkyPixel(x, y, result);
+			}
+		}
+		break;
+	case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z:	//Front
+		std::cout << "F" << std::endl;
+		for (int x = recStart.x; x < recStart.x + recWidth; ++x) {
+			for (int y = recStart.y + recWidth - 1; y >= recStart.y; --y) {
+				addSkyPixel(x, y, result);
+			}
+		}
+		break;
+	default:
+		std::cout << "ERROR: invalid skybox direction" << std::endl;
+		break;
 	}
 
 	return result;
-
 }
 
 void initSkyboxTex() {
