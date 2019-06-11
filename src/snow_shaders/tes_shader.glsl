@@ -4,6 +4,7 @@ layout(triangles, fractional_odd_spacing, ccw) in;
 
 layout(binding = 0) uniform sampler2D heightmap;
 layout(r32ui, binding = 1) uniform uimage2D deformation_texture;
+layout(binding = 10) uniform sampler2D snow_height_displacement;
 
 layout(location = 0) uniform mat4 mvp;
 layout(location = 2) uniform vec2 terrain_size;
@@ -11,13 +12,18 @@ layout(location = 3) uniform float vertical_scaling;
 layout(location = 4) uniform vec3 camera_position;
 layout(location = 8) uniform float pixel_resolution;
 layout(location = 9) uniform float snow_height;
-
+layout(location = 16) uniform float snow_texture_size;
+layout(location = 17) uniform float snow_height_displacement_size;
 
 in vec3[] position_es;
 in vec3[] color_es;
 
 out vec3 diffuse_color;
 out vec3 world_position;
+
+float getSnowTextureHeight(vec2 location){
+	return texture(snow_height_displacement, location/snow_texture_size).x * snow_height_displacement_size;
+}
 
 vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2)
 {
@@ -104,6 +110,7 @@ void main(){
  	
  	float height = getGroundHeight(world_pos.xz)+snow_height;
  	height = getDeformedHeight(world_pos.xz, height);
+ 	height += getSnowTextureHeight(world_pos.xz);
  	
 	vec3 pos = vec3(world_pos.x, height ,world_pos.z);
 	world_position = pos;

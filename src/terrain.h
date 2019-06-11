@@ -4,11 +4,14 @@
 #include <glm/glm.hpp>
 #include "shaders.h"
 #include "misc/heightmap2.c"
-#include "misc/snow_normal_tex.c"
+#include "misc/rocky_snow/ao.c"
+#include "misc/rocky_snow/color.c"
+#include "misc/rocky_snow/height.c"
+#include "misc/rocky_snow/normal.c"
 
 namespace terrain {
 GLuint terrainVAO, vertexBuffer, elementBuffer;
-GLuint heightmap_tex, snow_normal_tex;
+GLuint heightmap_tex, snow_normal_tex, snow_color_tex, snow_ao_tex, snow_height_tex;
 GLint vpos_location = 0;
 GLint vcol_location = 1;
 
@@ -44,7 +47,7 @@ void prepareData() {
 					{ { x * config::terrainSizeU.x / config::terrainVerticesX,
 							0, z * config::terrainSizeU.y
 									/ config::terrainVerticesZ },
-				{ 0.4, 0.8, 1.0 } });
+							{ 0.4, 0.8, 1.0 } });
 		}
 	}
 	int offset = 0; //note: if i indices buffer already contains stuff for other objects
@@ -80,12 +83,45 @@ void initHeightmapTex() {
 void initSnowNormalTex() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, snow_normals_texture.width, snow_normals_texture.height,
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, snow_normal.width, snow_normal.height,
 			0,
-			GL_RGB, GL_UNSIGNED_BYTE, snow_normals_texture.pixel_data);
+			GL_RGB, GL_UNSIGNED_BYTE, snow_normal.pixel_data);
+}
+
+void initSnowColorTex() {
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, snow_color.width, snow_color.height,
+			0,
+			GL_RGB, GL_UNSIGNED_BYTE, snow_color.pixel_data);
+}
+
+void initSnowAOTex() {
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, snow_ao.width, snow_ao.height,
+			0,
+			GL_RGB, GL_UNSIGNED_BYTE, snow_ao.pixel_data);
+}
+
+void initSnowHeightTex() {
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, snow_height.width, snow_height.height,
+			0,
+			GL_RGB, GL_UNSIGNED_BYTE, snow_height.pixel_data);
 }
 
 void init() {
@@ -108,6 +144,24 @@ void init() {
 	glGenTextures(1, &snow_normal_tex);
 	glBindTexture(GL_TEXTURE_2D, snow_normal_tex);
 	initSnowNormalTex();
+	checkGl();
+
+	glActiveTexture(GL_TEXTURE8);
+	glGenTextures(1, &snow_color_tex);
+	glBindTexture(GL_TEXTURE_2D, snow_color_tex);
+	initSnowColorTex();
+	checkGl();
+
+	glActiveTexture(GL_TEXTURE9);
+	glGenTextures(1, &snow_ao_tex);
+	glBindTexture(GL_TEXTURE_2D, snow_ao_tex);
+	initSnowAOTex();
+	checkGl();
+
+	glActiveTexture(GL_TEXTURE10);
+	glGenTextures(1, &snow_height_tex);
+	glBindTexture(GL_TEXTURE_2D, snow_height_tex);
+	initSnowHeightTex();
 	checkGl();
 
 	prepareData();

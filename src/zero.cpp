@@ -261,6 +261,9 @@ void render() {
 	glUniform3fv(globals::camera_position_location, 1, glm::value_ptr(camera::position));
 	glUniform1f(globals::normal_offset_location, config::normalOffsetU);
 
+	glUniform1f(globals::snow_height_displacement_size_location, config::snow_height_displacement_size);
+	glUniform1f(globals::snow_texture_size_location, config::snow_texture_size);
+
 	glPatchParameteri(GL_PATCH_VERTICES, 3);
 	glDrawElements(GL_PATCHES, terrain::indicesData.size(), GL_UNSIGNED_INT, 0);
 	glUseProgram(0);
@@ -282,6 +285,9 @@ void render() {
 	glUniform1f(globals::snow_height_location, config::snow_heightU);
 	glUniform1f(globals::pixel_resolution_location, config::pixelResolutionU);
 	glUniform1f(globals::normal_offset_location, config::normalOffsetU);
+
+	glUniform1f(globals::snow_height_displacement_size_location, config::snow_height_displacement_size);
+	glUniform1f(globals::snow_texture_size_location, config::snow_texture_size);
 
 	glPatchParameteri(GL_PATCH_VERTICES, 3);
 	glDrawElements(GL_PATCHES, terrain::indicesData.size(), GL_UNSIGNED_INT, 0);

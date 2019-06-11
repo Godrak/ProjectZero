@@ -26,7 +26,14 @@ void main(){
 	vec3 diff_color = texture(colors, uv).xyz;
 	vec3 position = texture(positions, uv).xyz;
 	
-	vec3 lightDir = (light_center - position);
+	vec3 light_c;
+	if (ambientFlag == 1){
+    	light_c = vec3(5000,20000,5000);
+	} else {
+		light_c = light_center;
+	}
+	
+	vec3 lightDir = (light_c - position);
 	float distance = length(lightDir);
 	
 	float distance_sq = distance*distance;
@@ -41,13 +48,13 @@ void main(){
     vec3 halfwayDir = normalize(lightDir + viewDir);  
     float spec = pow(max(dot(normal, halfwayDir), 0.0), 16.0);
     if (normal == vec3(0,0,0) && ambientFlag == 0)
-    	spec = 0.9;
+    	spec = 1;
    	vec3 specular = light_color * spec;
     
     // attenuation
     float attenuation;
     if (ambientFlag == 1){
-    	attenuation = 30;
+    	attenuation = 10;
     } else {
 		attenuation = lightParams.x + lightParams.y*distance + lightParams.z*distance_sq;
     }

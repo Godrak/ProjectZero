@@ -2,7 +2,10 @@
 
 layout(binding = 0) uniform sampler2D heightmap;
 layout(r32ui, binding = 1) uniform uimage2D deformation_texture;
+
 layout(binding = 6) uniform sampler2D snow_normals_texture;
+layout(binding = 8) uniform sampler2D snow_color_texture;
+layout(binding = 9) uniform sampler2D snow_ambient_texture;
 
 layout(location = 2) uniform vec2 terrain_size;
 layout(location = 3) uniform float vertical_scaling;
@@ -10,6 +13,7 @@ layout(location = 4) uniform vec3 camera_position;
 layout(location = 8) uniform float pixel_resolution;
 layout(location = 9) uniform float snow_height;
 layout(location = 10) uniform float normal_offset;
+layout(location = 16) uniform float snow_texture_size;
 
 in vec3	world_position;
 in vec3 diffuse_color;
@@ -28,6 +32,20 @@ float get_noise(float x,float y,float z)
 {
     return fract(sin(dot(vec3(x,y,z)*(seed+PHI), vec3(PHI, PI, PHI)))*SQ2);
 }
+
+
+vec3 getSnowTextureColor(vec2 location){
+	return texture(snow_color_texture, location/snow_texture_size).xyz;
+}
+
+vec3 getSnowTextureNormal(vec2 location){
+	return normalize(2*texture(snow_normals_texture, location/snow_texture_size).xzy - 1);
+}
+
+float getSnowTextureAmbient(vec2 location){
+	return texture(snow_ambient_texture, location/snow_texture_size).x;
+}
+
 
 
 float getGroundHeight(vec2 world_pos){
@@ -80,7 +98,7 @@ float computeDepressionOrElevation(float deformation_height, float deform_point_
 	float depression_depth = abs(total_height - deform_point_height);
 	 
 	float elevation_distance = distance_from_foot - depression_distance;
-	float maximum_elevation_distance  = snow_height*0.1;	
+	float maximum_elevation_distance  = snow_height*0.2;	
 	float ratio = abs(elevation_distance / maximum_elevation_distance);
 	
 	float height = maximum_elevation_distance*5.0;
@@ -154,15 +172,11 @@ void main(){
 	vec3 n = getGroundNormal(world_position.xz);
 	vec3 dnormal = getDeformedNormal(world_position.xz, n);
 	
-	vec3 snormal = normalize(getSnowNormal(world_position.xz, 20));
-	vec3 s2normal = normalize(getSnowNormal(world_position.xz, 100));
 	
-	//vec3 noise = normalize(vec3(get_noise(world_position.x, world_position.y, world_position.z), 
-	//					   get_noise(world_position.z, world_position.y, world_position.x),
-	//					   get_noise(world_position.y, world_position.x, world_position.y)));
+	float ambient = getSnowTextureAmbient(world_position.xz);
+	vec3 tcolor = sqrt(getSnowTextureColor(world_position.xz));
+	vec3 tnormal = getSnowTextureNormal(world_position.xz);
 	
-	
-	normal = normalize(snormal/6 + s2normal/3 + dnormal);
-	//normal = snormal;
-	color = diffuse_color;
+	normal = normalize((dnormal + tnormal));
+	color = ambient*tcolor;
 }
